@@ -4,7 +4,7 @@ import { useTheme } from "@/contexts/ThemeContext";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { useState } from "react";
-import { KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
+import { Keyboard, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 function randomItem<T>(arr: readonly T[]): T {
@@ -58,7 +58,7 @@ export default function AddProfile() {
             placeholderTextColor={theme.textMuted}
             autoFocus
             returnKeyType="done"
-            onSubmitEditing={handleAdd}
+            onSubmitEditing={Keyboard.dismiss}
             maxLength={20}
           />
 

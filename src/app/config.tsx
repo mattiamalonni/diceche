@@ -44,7 +44,7 @@ export default function Config() {
       syllableTimer: null,
       roundTimer: null,
       hideTimer: null,
-      speech: false,
+      speech: true,
       uppercase: true,
     },
     ...(activeProfile?.config ?? {}),
@@ -158,7 +158,7 @@ export default function Config() {
               <Text style={[styles.rowSub, { color: theme.textMuted }]}>Legge la sillaba ad alta voce</Text>
             </View>
             <Switch
-              value={config.speech ?? false}
+              value={config.speech ?? true}
               onValueChange={(val) => setConfig((c) => ({ ...c, speech: val }))}
               trackColor={{ true: COLORS.bg5, false: theme.border }}
               thumbColor={COLORS.white}

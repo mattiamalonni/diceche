@@ -4,7 +4,7 @@ import { useTheme } from "@/contexts/ThemeContext";
 import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useState } from "react";
-import { KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput } from "react-native";
+import { Keyboard, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function EditProfile() {
@@ -61,7 +61,7 @@ export default function EditProfile() {
             placeholder="Nome del bambino"
             placeholderTextColor={theme.textMuted}
             returnKeyType="done"
-            onSubmitEditing={handleSave}
+            onSubmitEditing={Keyboard.dismiss}
             maxLength={20}
           />
 

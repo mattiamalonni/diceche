@@ -27,7 +27,7 @@ export const DEFAULT_CONFIG: RoundConfig = {
   syllableTimer: null,
   roundTimer: null,
   hideTimer: null,
-  speech: false,
+  speech: true,
   uppercase: true,
 };
 
