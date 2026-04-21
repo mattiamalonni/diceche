@@ -14,9 +14,6 @@ export default function Home() {
     return null;
   }
 
-  const stats = activeProfile.stats;
-  const avgAccuracy = stats && stats.gamesPlayed > 0 ? Math.round((stats.totalCorrect / stats.totalItems) * 100) : null;
-
   const handleQuickPlay = () => {
     const cfg = lastConfig ?? activeProfile.config;
     startRound(cfg);
@@ -39,11 +36,6 @@ export default function Home() {
         <Text style={styles.name} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.5}>
           {activeProfile.name}!
         </Text>
-        {stats && stats.gamesPlayed > 0 && (
-          <Text style={styles.stats}>
-            {stats.gamesPlayed} {stats.gamesPlayed === 1 ? "partita" : "partite"} · {avgAccuracy}% media
-          </Text>
-        )}
       </View>
 
       <View style={styles.buttons}>
@@ -110,13 +102,6 @@ const styles = StyleSheet.create({
     fontWeight: "800",
     color: COLORS.white,
     maxWidth: "90%",
-  },
-  stats: {
-    fontSize: 15,
-    fontWeight: "600",
-    color: COLORS.white,
-    opacity: 0.75,
-    marginTop: 4,
   },
   buttons: {
     margin: 32,

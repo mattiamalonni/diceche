@@ -2,7 +2,7 @@ import { COLORS } from "@/constants/colors";
 import { useGame } from "@/contexts/GameContext";
 import { useProfiles } from "@/contexts/ProfileContext";
 import { useRouter } from "expo-router";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { Pressable, SafeAreaView, StyleSheet, Text, View } from "react-native";
 import Animated, {
   Easing,
@@ -63,20 +63,15 @@ function Confetti() {
 }
 
 export default function Completion() {
-  const { activeProfile, updateProfileStats } = useProfiles();
+  const { activeProfile } = useProfiles();
   const { restartRound, correctCount, items, wrongItems } = useGame();
   const router = useRouter();
-  const statsRecordedRef = useRef(false);
   const [errorsExpanded, setErrorsExpanded] = useState(false);
 
   const scale = useSharedValue(0.5);
   const opacity = useSharedValue(0);
 
   useEffect(() => {
-    if (!statsRecordedRef.current && activeProfile && items.length > 0) {
-      statsRecordedRef.current = true;
-      updateProfileStats(activeProfile.id, correctCount, items.length);
-    }
     scale.value = withSequence(
       withTiming(1.1, { duration: 300, easing: Easing.out(Easing.back(2)) }),
       withTiming(1, { duration: 150 }),
