@@ -11,7 +11,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function ProfileSelection() {
   const { profiles, setActiveProfile, deleteProfile, isLoaded } = useProfiles();
-  const { theme, override, setOverride } = useTheme();
+  const { theme, setOverride } = useTheme();
   const { soundEnabled, setSoundEnabled } = useSoundContext();
   const router = useRouter();
   const [aboutVisible, setAboutVisible] = useState(false);
@@ -59,12 +59,6 @@ export default function ProfileSelection() {
               thumbColor={COLORS.white}
             />
           </View>
-          {override !== null && (
-            <Pressable onPress={() => setOverride(null)}>
-              <Text style={[styles.themeReset, { color: theme.textMuted }]}>Usa tema di sistema</Text>
-            </Pressable>
-          )}
-
           <View style={[styles.modalDivider, { backgroundColor: theme.border }]} />
 
           {/* Sound toggle */}
@@ -248,11 +242,6 @@ const styles = StyleSheet.create({
   themeLabel: {
     fontSize: 15,
     fontWeight: "600",
-  },
-  themeReset: {
-    fontSize: 12,
-    textDecorationLine: "underline",
-    marginTop: -8,
   },
   modalFooter: {
     fontSize: 12,
