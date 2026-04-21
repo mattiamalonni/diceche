@@ -1,4 +1,21 @@
-export type SpecialGroup = "CH" | "GH" | "GL" | "GN" | "SC" | "QU";
+export type SpecialGroup =
+  | "CH"
+  | "GH"
+  | "GL"
+  | "GN"
+  | "SC"
+  | "QU"
+  | "BR"
+  | "CR"
+  | "DR"
+  | "FR"
+  | "GR"
+  | "PR"
+  | "TR"
+  | "BL"
+  | "CL"
+  | "FL"
+  | "PL";
 export type WordPack = "articoli_det" | "articoli_indet" | "prep_semplici" | "prep_articolate";
 
 export interface DictionaryConfig {
@@ -20,7 +37,7 @@ export interface RoundConfig {
 export const DEFAULT_CONFIG: RoundConfig = {
   dictionary: {
     base: true,
-    specials: ["CH", "GH", "GL", "GN", "SC", "QU"],
+    specials: ["CH", "GH", "GL", "GN", "SC", "QU", "BR", "CR", "DR", "FR", "GR", "PR", "TR", "BL", "CL", "FL", "PL"],
     packs: ["articoli_det", "articoli_indet", "prep_semplici", "prep_articolate"],
   },
   count: 30,
@@ -50,10 +67,21 @@ export function generateBase(): string[] {
 const SPECIALS: Record<SpecialGroup, string[]> = {
   CH: ["che", "chi"],
   GH: ["ghe", "ghi"],
-  GL: ["gli"],
+  GL: ["gla", "gle", "gli", "glo", "glu"],
   GN: ["gna", "gne", "gni", "gno", "gnu"],
   SC: ["sca", "sce", "sci", "sco", "scu"],
   QU: ["qua", "que", "qui", "quo"],
+  BR: ["bra", "bre", "bri", "bro", "bru"],
+  CR: ["cra", "cre", "cri", "cro", "cru"],
+  DR: ["dra", "dre", "dri", "dro", "dru"],
+  FR: ["fra", "fre", "fri", "fro", "fru"],
+  GR: ["gra", "gre", "gri", "gro", "gru"],
+  PR: ["pra", "pre", "pri", "pro", "pru"],
+  TR: ["tra", "tre", "tri", "tro", "tru"],
+  BL: ["bla", "ble", "bli", "blo", "blu"],
+  CL: ["cla", "cle", "cli", "clo", "clu"],
+  FL: ["fla", "fle", "fli", "flo", "flu"],
+  PL: ["pla", "ple", "pli", "plo", "plu"],
 };
 
 export function generateSpecials(active: SpecialGroup[]): string[] {
@@ -111,7 +139,7 @@ export function buildPool(config: RoundConfig): string[] {
     items.push(...WORD_PACKS[pack]);
   }
 
-  return shuffle(items);
+  return shuffle([...new Set(items)]);
 }
 
 export function shuffle<T>(arr: T[]): T[] {
@@ -124,13 +152,13 @@ export function shuffle<T>(arr: T[]): T[] {
 }
 
 export function getPoolSize(config: RoundConfig): number {
-  let size = 0;
-  if (config.dictionary.base) size += generateBase().length;
-  size += generateSpecials(config.dictionary.specials).length;
+  const items: string[] = [];
+  if (config.dictionary.base) items.push(...generateBase());
+  items.push(...generateSpecials(config.dictionary.specials));
   for (const pack of config.dictionary.packs) {
-    size += WORD_PACKS[pack].length;
+    items.push(...WORD_PACKS[pack]);
   }
-  return size;
+  return new Set(items).size;
 }
 
 export const WORD_PACK_LABELS: Record<WordPack, string> = {
@@ -143,11 +171,40 @@ export const WORD_PACK_LABELS: Record<WordPack, string> = {
 export const SPECIAL_LABELS: Record<SpecialGroup, string> = {
   CH: "CH (che, chi)",
   GH: "GH (ghe, ghi)",
-  GL: "GL (gli)",
+  GL: "GL (gla, gle, gli, glo, glu)",
   GN: "GN (gna, gne, gni, gno, gnu)",
   SC: "SC (sca, sce, sci, sco, scu)",
   QU: "QU (qua, que, qui, quo)",
+  BR: "BR (bra, bre, bri, bro, bru)",
+  CR: "CR (cra, cre, cri, cro, cru)",
+  DR: "DR (dra, dre, dri, dro, dru)",
+  FR: "FR (fra, fre, fri, fro, fru)",
+  GR: "GR (gra, gre, gri, gro, gru)",
+  PR: "PR (pra, pre, pri, pro, pru)",
+  TR: "TR (tra, tre, tri, tro, tru)",
+  BL: "BL (bla, ble, bli, blo, blu)",
+  CL: "CL (cla, cle, cli, clo, clu)",
+  FL: "FL (fla, fle, fli, flo, flu)",
+  PL: "PL (pla, ple, pli, plo, plu)",
 };
 
-export const ALL_SPECIALS: SpecialGroup[] = ["CH", "GH", "GL", "GN", "SC", "QU"];
+export const ALL_SPECIALS: SpecialGroup[] = [
+  "CH",
+  "GH",
+  "GL",
+  "GN",
+  "SC",
+  "QU",
+  "BR",
+  "CR",
+  "DR",
+  "FR",
+  "GR",
+  "PR",
+  "TR",
+  "BL",
+  "CL",
+  "FL",
+  "PL",
+];
 export const ALL_PACKS: WordPack[] = ["articoli_det", "articoli_indet", "prep_semplici", "prep_articolate"];
