@@ -100,7 +100,7 @@ export default function Completion() {
           <Text style={styles.title} numberOfLines={2} adjustsFontSizeToFit minimumFontScale={0.5}>
             Bravo{activeProfile ? `, ${activeProfile.name}` : ""}!
           </Text>
-          <Text style={styles.subtitle}>Hai finito il round!</Text>
+          <Text style={styles.subtitle}>Hai finito la partita!</Text>
           <Text style={styles.score}>
             {correctCount} / {items.length} corrette
           </Text>

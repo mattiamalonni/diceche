@@ -88,7 +88,7 @@ export default function Config() {
         <Pressable style={{ width: 44 }} onPress={() => router.back()}>
           <Ionicons name="chevron-back" size={20} color={COLORS.primary} />
         </Pressable>
-        <Text style={[styles.headerTitle, { color: theme.text }]}>Configura il round</Text>
+        <Text style={[styles.headerTitle, { color: theme.text }]}>Configura la partita</Text>
         <View style={{ width: 44 }} />
       </View>
 
@@ -96,7 +96,7 @@ export default function Config() {
         {/* Count picker */}
         <View style={[styles.section, { backgroundColor: theme.surface2 }]}>
           <Text style={[styles.sectionTitle, { color: theme.text }]}>Numero di combinazioni</Text>
-          <Text style={[styles.sectionSub, { color: theme.textMuted }]}>Pool disponibile: {poolSize}</Text>
+          <Text style={[styles.sectionSub, { color: theme.textMuted }]}>Totale disponibile: {poolSize}</Text>
           <View style={styles.counter}>
             <Pressable
               style={[styles.counterBtn, cappedCount <= 1 && styles.counterBtnDisabled]}
@@ -226,11 +226,11 @@ export default function Config() {
             </View>
           )}
 
-          {/* Round timer */}
+          {/* Timer partita */}
           <View style={styles.row}>
             <View style={styles.timerLabelGroup}>
-              <Text style={[styles.rowLabel, { color: theme.text }]}>Timer round</Text>
-              <Text style={[styles.rowSub, { color: theme.textMuted }]}>Termina il round allo scadere</Text>
+              <Text style={[styles.rowLabel, { color: theme.text }]}>Timer partita</Text>
+              <Text style={[styles.rowSub, { color: theme.textMuted }]}>Termina la partita allo scadere</Text>
             </View>
             <Switch
               value={config.roundTimer !== null}

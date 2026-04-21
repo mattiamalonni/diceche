@@ -80,7 +80,7 @@ export default function Game() {
     countdownScale.value = withSpring(1, { damping: 10, stiffness: 120 });
   }, [countdown]);
 
-  // Round timer: start after countdown ends
+  // Timer partita: inizia dopo la fine del conto alla rovescia
   useEffect(() => {
     if (!roundTimerSeconds || countdown !== null) return;
     const endTime = Date.now() + roundTimerSeconds * 1000;
@@ -100,7 +100,7 @@ export default function Game() {
     };
   }, [countdown]);
 
-  // Round timer expiry: current syllable counts as wrong, finish round
+  // Scadenza timer partita: la sillaba corrente conta come sbagliata, termina la partita
   useEffect(() => {
     if (roundSecondsLeft === 0 && !isFinished) {
       cancelAnimation(syllableProgress);
@@ -210,7 +210,7 @@ export default function Game() {
           animateAndAdvance(markWrong);
         }
       }
-      // Resume round timer from last known seconds
+      // Riprendi il timer della partita dagli ultimi secondi noti
       const secsLeft = roundSecondsLeftRef.current;
       if (roundTimerSeconds && secsLeft !== null && secsLeft > 0) {
         const endTime = Date.now() + secsLeft * 1000;
