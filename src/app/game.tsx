@@ -2,6 +2,7 @@ import { COLORS, getBgColor } from "@/constants/colors";
 import { useGame } from "@/contexts/GameContext";
 import * as Haptics from "expo-haptics";
 import { useRouter } from "expo-router";
+import * as Speech from "expo-speech";
 import { useEffect, useRef, useState } from "react";
 import { Alert, Pressable, StyleSheet, Text, View } from "react-native";
 import Animated, {
@@ -22,6 +23,7 @@ export default function Game() {
 
   const syllableTimerSeconds = config?.syllableTimer ?? null;
   const roundTimerSeconds = config?.roundTimer ?? null;
+  const speechEnabled = config?.speech ?? false;
 
   const translateX = useSharedValue(0);
   const opacity = useSharedValue(1);
@@ -36,6 +38,17 @@ export default function Game() {
   const roundIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const roundSecondsLeftRef = useRef<number | null>(roundTimerSeconds);
   const isTransitioningRef = useRef(false);
+  const bestVoiceRef = useRef<string | undefined>(undefined);
+
+  // Pick best available Italian voice once on mount
+  useEffect(() => {
+    if (!speechEnabled) return;
+    Speech.getAvailableVoicesAsync().then((voices) => {
+      const italian = voices.filter((v) => v.language?.startsWith("it"));
+      const enhanced = italian.find((v) => v.quality === Speech.VoiceQuality.Enhanced);
+      bestVoiceRef.current = (enhanced ?? italian[0])?.identifier;
+    });
+  }, []);
 
   useEffect(() => {
     if (isFinished) {
@@ -140,6 +153,10 @@ export default function Game() {
         runOnJS(animateAndAdvance)(markWrong);
       }),
     );
+  };
+
+  const handleSpeech = () => {
+    Speech.speak(current, { language: "it-IT", rate: 0.8, voice: bestVoiceRef.current });
   };
 
   const handleExit = () => {
@@ -289,6 +306,11 @@ export default function Game() {
               <Text style={styles.btnIcon}>✗</Text>
               <Text style={styles.btnLabel}>Sbagliato</Text>
             </Pressable>
+            {speechEnabled && (
+              <Pressable style={[styles.btn, styles.speechBtn]} onPress={handleSpeech}>
+                <Text style={styles.btnIcon}>🔊</Text>
+              </Pressable>
+            )}
             <Pressable
               style={[styles.btn, styles.correctBtn]}
               onPress={handleCorrect}
@@ -410,6 +432,20 @@ const styles = StyleSheet.create({
   },
   correctBtn: {
     backgroundColor: COLORS.success,
+  },
+  speechBtn: {
+    flex: 0,
+    width: 72,
+    paddingVertical: 18,
+    borderRadius: 24,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "rgba(255,255,255,0.25)",
+    elevation: 4,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 6,
   },
   btnIcon: {
     fontSize: 28,

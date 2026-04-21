@@ -35,6 +35,7 @@ export default function Config() {
       count: 30,
       syllableTimer: null,
       roundTimer: null,
+      speech: false,
     },
     ...(activeProfile?.config ?? {}),
   });
@@ -119,6 +120,20 @@ export default function Config() {
         {/* Timer */}
         <View style={[styles.section, { backgroundColor: theme.surface2 }]}>
           <Text style={[styles.sectionTitle, { color: theme.text }]}>Timer</Text>
+
+          {/* Speech */}
+          <View style={styles.row}>
+            <View style={styles.timerLabelGroup}>
+              <Text style={[styles.rowLabel, { color: theme.text }]}>🔊 Pulsante pronuncia</Text>
+              <Text style={[styles.rowSub, { color: theme.textMuted }]}>Legge la sillaba ad alta voce</Text>
+            </View>
+            <Switch
+              value={config.speech ?? false}
+              onValueChange={(val) => setConfig((c) => ({ ...c, speech: val }))}
+              trackColor={{ true: COLORS.accent, false: theme.border }}
+              thumbColor={COLORS.white}
+            />
+          </View>
 
           {/* Syllable timer */}
           <View style={styles.row}>
