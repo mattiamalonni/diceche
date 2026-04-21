@@ -139,7 +139,7 @@ export default function ProfileSelection() {
               )}
             </Pressable>
           ))}
-          {canAdd && !isEditMode && (
+          {canAdd && isEditMode && (
             <Pressable
               style={[styles.addCard, { backgroundColor: theme.surface2, borderColor: theme.border }]}
               onPress={() => router.push("/add-profile")}
