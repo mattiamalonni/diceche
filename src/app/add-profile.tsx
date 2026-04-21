@@ -1,6 +1,7 @@
 import { AVATARS, COLORS, PROFILE_COLORS } from "@/constants/colors";
 import { useProfiles } from "@/contexts/ProfileContext";
 import { useTheme } from "@/contexts/ThemeContext";
+import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { useState } from "react";
 import { KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
@@ -34,7 +35,7 @@ export default function AddProfile() {
     <SafeAreaView style={[styles.container, { backgroundColor: theme.surface }]}>
       <KeyboardAvoidingView style={styles.flex} behavior={Platform.OS === "ios" ? "padding" : undefined}>
         <Pressable style={styles.back} onPress={() => router.back()}>
-          <Text style={styles.backText}>← Indietro</Text>
+          <Ionicons name="chevron-back" size={20} color={COLORS.primary} />
         </Pressable>
 
         <ScrollView
@@ -89,7 +90,7 @@ export default function AddProfile() {
                 style={[styles.colorDot, { backgroundColor: c }, color === c && styles.colorDotSelected]}
                 onPress={() => setColor(c)}
               >
-                {color === c && <Text style={styles.colorCheck}>✓</Text>}
+                {color === c && <Ionicons name="checkmark" size={20} color={COLORS.white} />}
               </Pressable>
             ))}
           </View>
@@ -115,11 +116,6 @@ const styles = StyleSheet.create({
     alignSelf: "flex-start",
     paddingHorizontal: 24,
     paddingVertical: 12,
-  },
-  backText: {
-    fontSize: 16,
-    color: COLORS.primary,
-    fontWeight: "600",
   },
   scroll: {
     padding: 24,
@@ -204,11 +200,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 4,
   },
-  colorCheck: {
-    fontSize: 16,
-    fontWeight: "900",
-    color: COLORS.white,
-  },
+
   button: {
     backgroundColor: COLORS.primary,
     paddingVertical: 16,

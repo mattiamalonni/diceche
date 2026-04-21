@@ -1,5 +1,6 @@
 import { COLORS, getBgColor } from "@/constants/colors";
 import { useGame } from "@/contexts/GameContext";
+import { Ionicons } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
 import { Stack, useRouter } from "expo-router";
 import * as Speech from "expo-speech";
@@ -290,7 +291,7 @@ export default function Game() {
         {/* Progress / exit button */}
         <View style={styles.progressContainer}>
           <Pressable style={styles.exitBtn} onPress={handleExit} hitSlop={8}>
-            <Text style={styles.exitBtnText}>×</Text>
+            <Ionicons name="close" size={18} color="rgba(255,255,255,0.9)" />
           </Pressable>
           {countdown === null && (
             <View style={styles.progressRow}>
@@ -298,9 +299,16 @@ export default function Game() {
                 {Math.min(currentIndex + 1, items.length)} / {items.length}
               </Text>
               {roundTimerSeconds !== null && roundSecondsLeft !== null && (
-                <Text style={[styles.progressText, roundSecondsLeft <= 30 && styles.progressTextWarning]}>
-                  {"  ⏱ " + formatTime(roundSecondsLeft)}
-                </Text>
+                <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
+                  <Ionicons
+                    name="time-outline"
+                    size={18}
+                    color={roundSecondsLeft <= 30 ? COLORS.danger : "rgba(255,255,255,0.85)"}
+                  />
+                  <Text style={[styles.progressText, roundSecondsLeft <= 30 && styles.progressTextWarning]}>
+                    {formatTime(roundSecondsLeft)}
+                  </Text>
+                </View>
               )}
             </View>
           )}
@@ -364,12 +372,12 @@ export default function Game() {
                 onPress={handleWrong}
                 android_ripple={{ color: "rgba(255,255,255,0.3)" }}
               >
-                <Text style={styles.btnIcon}>✗</Text>
+                <Ionicons name="close" size={28} color={COLORS.white} />
                 <Text style={styles.btnLabel}>Sbagliato</Text>
               </Pressable>
               {speechEnabled && (
                 <Pressable style={[styles.btn, styles.speechBtn]} onPress={handleSpeech}>
-                  <Text style={styles.btnIcon}>🔊</Text>
+                  <Ionicons name="volume-high" size={28} color={COLORS.white} />
                 </Pressable>
               )}
               <Pressable
@@ -377,7 +385,7 @@ export default function Game() {
                 onPress={handleCorrect}
                 android_ripple={{ color: "rgba(255,255,255,0.3)" }}
               >
-                <Text style={styles.btnIcon}>✓</Text>
+                <Ionicons name="checkmark" size={28} color={COLORS.white} />
                 <Text style={styles.btnLabel}>Giusto</Text>
               </Pressable>
             </View>
@@ -407,12 +415,6 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(255,255,255,0.25)",
     alignItems: "center",
     justifyContent: "center",
-  },
-  exitBtnText: {
-    fontSize: 18,
-    fontWeight: "700",
-    color: "rgba(255,255,255,0.9)",
-    lineHeight: 22,
   },
   progressRow: {
     flexDirection: "row",
@@ -515,12 +517,6 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,
     shadowRadius: 6,
-  },
-  btnIcon: {
-    fontSize: 28,
-    color: "#FFFFFF",
-    fontWeight: "900",
-    lineHeight: 32,
   },
   btnLabel: {
     fontSize: 14,

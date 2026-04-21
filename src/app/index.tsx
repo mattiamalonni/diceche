@@ -2,6 +2,7 @@ import { COLORS } from "@/constants/colors";
 import { useProfiles } from "@/contexts/ProfileContext";
 import { useSoundContext } from "@/contexts/SoundContext";
 import { useTheme } from "@/contexts/ThemeContext";
+import { Ionicons } from "@expo/vector-icons";
 import Constants from "expo-constants";
 import { useRouter } from "expo-router";
 import { useState } from "react";
@@ -47,9 +48,10 @@ export default function ProfileSelection() {
 
           {/* Dark mode toggle */}
           <View style={styles.themeRow}>
-            <Text style={[styles.themeLabel, { color: theme.text }]}>
-              {theme.isDark ? "\uD83C\uDF19 Tema scuro" : "\u2600\uFE0F Tema chiaro"}
-            </Text>
+            <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
+              <Ionicons name={theme.isDark ? "moon" : "sunny"} size={16} color={theme.text} />
+              <Text style={[styles.themeLabel, { color: theme.text }]}>{theme.isDark ? "Tema scuro" : "Tema chiaro"}</Text>
+            </View>
             <Switch
               value={theme.isDark}
               onValueChange={(val) => setOverride(val ? "dark" : "light")}
@@ -67,9 +69,10 @@ export default function ProfileSelection() {
 
           {/* Sound toggle */}
           <View style={styles.themeRow}>
-            <Text style={[styles.themeLabel, { color: theme.text }]}>
-              {soundEnabled ? "🔔 Suoni attivi" : "🔕 Suoni disattivi"}
-            </Text>
+            <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
+              <Ionicons name={soundEnabled ? "notifications" : "notifications-off"} size={16} color={theme.text} />
+              <Text style={[styles.themeLabel, { color: theme.text }]}>{soundEnabled ? "Suoni attivi" : "Suoni disattivi"}</Text>
+            </View>
             <Switch
               value={soundEnabled}
               onValueChange={setSoundEnabled}
@@ -94,8 +97,8 @@ export default function ProfileSelection() {
   );
 
   const aboutButton = (
-    <Pressable style={[styles.aboutBtn, { borderColor: theme.textMuted }]} onPress={() => setAboutVisible(true)}>
-      <Text style={[styles.aboutBtnText, { color: theme.textMuted }]}>?</Text>
+    <Pressable style={styles.aboutBtn} onPress={() => setAboutVisible(true)}>
+      <Ionicons name="information-circle-outline" size={24} color={theme.textMuted} />
     </Pressable>
   );
 
@@ -151,7 +154,7 @@ export default function ProfileSelection() {
               </Text>
               {isEditMode && (
                 <Pressable style={styles.deleteBadge} onPress={() => handleDeleteProfile(profile.id, profile.name)} hitSlop={8}>
-                  <Text style={styles.deleteBadgeText}>✕</Text>
+                  <Ionicons name="close" size={14} color={COLORS.white} />
                 </Pressable>
               )}
             </Pressable>
@@ -161,7 +164,7 @@ export default function ProfileSelection() {
               style={[styles.addCard, { backgroundColor: theme.surface2, borderColor: theme.border }]}
               onPress={() => router.push("/add-profile")}
             >
-              <Text style={[styles.addIcon, { color: theme.textMuted }]}>+</Text>
+              <Ionicons name="add" size={40} color={theme.textMuted} />
               <Text style={[styles.addLabel, { color: theme.textMuted }]}>Aggiungi</Text>
             </Pressable>
           )}
@@ -197,19 +200,8 @@ const styles = StyleSheet.create({
     padding: 24,
   },
   aboutBtn: {
-    width: 24,
-    height: 24,
-    borderRadius: 12,
-    borderWidth: 1.5,
-    borderColor: COLORS.muted,
     alignItems: "center",
     justifyContent: "center",
-  },
-  aboutBtnText: {
-    fontSize: 13,
-    fontWeight: "700",
-    color: COLORS.muted,
-    lineHeight: 16,
   },
   overlay: {
     flex: 1,
@@ -325,10 +317,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     gap: 8,
   },
-  addIcon: {
-    fontSize: 40,
-    lineHeight: 44,
-  },
+
   addLabel: {
     fontSize: 14,
     fontWeight: "600",
@@ -360,12 +349,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 3,
   },
-  deleteBadgeText: {
-    fontSize: 13,
-    fontWeight: "800",
-    color: COLORS.white,
-    lineHeight: 16,
-  },
+
   editButton: {
     alignSelf: "center",
     marginTop: 24,

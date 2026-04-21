@@ -1,6 +1,7 @@
 import { COLORS } from "@/constants/colors";
 import { useGame } from "@/contexts/GameContext";
 import { useProfiles } from "@/contexts/ProfileContext";
+import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { useEffect } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
@@ -108,7 +109,10 @@ export default function Completion() {
 
       <View style={styles.actions}>
         <Pressable style={styles.primaryButton} onPress={handlePlayAgain}>
-          <Text style={styles.primaryButtonText}>▶ Gioca ancora</Text>
+          <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
+            <Ionicons name="play" size={22} color={COLORS.white} />
+            <Text style={styles.primaryButtonText}>Gioca ancora</Text>
+          </View>
         </Pressable>
         <Pressable style={styles.secondaryButton} onPress={() => router.replace("/home")}>
           <Text style={styles.secondaryButtonText}>Torna al menù</Text>

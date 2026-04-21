@@ -2,6 +2,7 @@ import { COLORS } from "@/constants/colors";
 import { useGame } from "@/contexts/GameContext";
 import { useTheme } from "@/contexts/ThemeContext";
 import { ALL_PACKS, ALL_SPECIALS, SPECIAL_LABELS, SpecialGroup, WORD_PACK_LABELS, WordPack } from "@/utils/syllables";
+import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { Pressable, ScrollView, StyleSheet, Switch, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -32,11 +33,11 @@ export default function ConfigDictionary() {
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: theme.surface }]}>
       <View style={[styles.header, { borderBottomColor: theme.border }]}>
-        <Pressable onPress={() => router.back()}>
-          <Text style={styles.backText}>← Indietro</Text>
+        <Pressable style={{ width: 44 }} onPress={() => router.back()}>
+          <Ionicons name="chevron-back" size={20} color={COLORS.primary} />
         </Pressable>
         <Text style={[styles.headerTitle, { color: theme.text }]}>Dizionario</Text>
-        <View style={{ width: 80 }} />
+        <View style={{ width: 44 }} />
       </View>
 
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
@@ -102,12 +103,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingVertical: 14,
     borderBottomWidth: 1,
-  },
-  backText: {
-    fontSize: 16,
-    color: COLORS.primary,
-    fontWeight: "600",
-    width: 80,
   },
   headerTitle: {
     fontSize: 18,

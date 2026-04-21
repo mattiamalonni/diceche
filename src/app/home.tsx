@@ -1,6 +1,7 @@
 import { COLORS } from "@/constants/colors";
 import { useGame } from "@/contexts/GameContext";
 import { useProfiles } from "@/contexts/ProfileContext";
+import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -41,11 +42,17 @@ export default function Home() {
 
       <View style={styles.buttons}>
         <Pressable style={styles.playButton} onPress={() => router.push("/config")}>
-          <Text style={[styles.playButtonText, { color: activeProfile.color ?? COLORS.bg2 }]}>▶ Gioca</Text>
+          <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
+            <Ionicons name="play" size={22} color={activeProfile.color ?? COLORS.bg2} />
+            <Text style={[styles.playButtonText, { color: activeProfile.color ?? COLORS.bg2 }]}>Gioca</Text>
+          </View>
         </Pressable>
         {(lastConfig ?? activeProfile.config) && (
           <Pressable style={styles.quickPlayButton} onPress={handleQuickPlay}>
-            <Text style={styles.quickPlayText}>⚡ Ripeti</Text>
+            <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
+              <Ionicons name="flash" size={18} color={COLORS.white} />
+              <Text style={styles.quickPlayText}>Ripeti</Text>
+            </View>
           </Pressable>
         )}
       </View>

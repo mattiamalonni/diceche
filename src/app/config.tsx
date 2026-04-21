@@ -3,6 +3,7 @@ import { useGame } from "@/contexts/GameContext";
 import { useProfiles } from "@/contexts/ProfileContext";
 import { useTheme } from "@/contexts/ThemeContext";
 import { ALL_PACKS, ALL_SPECIALS, DictionaryConfig, getPoolSize, RoundConfig } from "@/utils/syllables";
+import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { Pressable, ScrollView, StyleSheet, Switch, Text, View } from "react-native";
@@ -84,11 +85,11 @@ export default function Config() {
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: theme.surface }]}>
       <View style={[styles.header, { borderBottomColor: theme.border }]}>
-        <Pressable onPress={() => router.back()}>
-          <Text style={styles.backText}>← Indietro</Text>
+        <Pressable style={{ width: 44 }} onPress={() => router.back()}>
+          <Ionicons name="chevron-back" size={20} color={COLORS.primary} />
         </Pressable>
         <Text style={[styles.headerTitle, { color: theme.text }]}>Configura il round</Text>
-        <View style={{ width: 80 }} />
+        <View style={{ width: 44 }} />
       </View>
 
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
@@ -102,7 +103,7 @@ export default function Config() {
               onPress={() => handleCountChange(-1)}
               disabled={cappedCount <= 1}
             >
-              <Text style={styles.counterBtnText}>−</Text>
+              <Ionicons name="remove" size={22} color={COLORS.white} />
             </Pressable>
             <Text style={[styles.counterValue, { color: theme.text }]}>{cappedCount}</Text>
             <Pressable
@@ -110,7 +111,7 @@ export default function Config() {
               onPress={() => handleCountChange(1)}
               disabled={cappedCount >= poolSize}
             >
-              <Text style={styles.counterBtnText}>+</Text>
+              <Ionicons name="add" size={22} color={COLORS.white} />
             </Pressable>
           </View>
         </View>
@@ -120,7 +121,7 @@ export default function Config() {
           <View style={[styles.section, { backgroundColor: theme.surface2 }]}>
             <View style={styles.row}>
               <Text style={[styles.sectionTitle, { color: theme.text }]}>Dizionario</Text>
-              <Text style={[styles.chevron, { color: theme.textMuted }]}>›</Text>
+              <Ionicons name="chevron-forward" size={18} color={theme.textMuted} />
             </View>
             <Text style={[styles.sectionSub, { color: theme.textMuted }]}>{buildDictionarySummary(pendingDictionary)}</Text>
           </View>
@@ -207,7 +208,7 @@ export default function Config() {
                 }
                 disabled={config.syllableTimer <= 1}
               >
-                <Text style={styles.counterBtnText}>−</Text>
+                <Ionicons name="remove" size={22} color={COLORS.white} />
               </Pressable>
               <Text style={[styles.counterValue, { color: theme.text }]}>{config.syllableTimer}s</Text>
               <Pressable
@@ -220,7 +221,7 @@ export default function Config() {
                 }
                 disabled={config.syllableTimer >= 30}
               >
-                <Text style={styles.counterBtnText}>+</Text>
+                <Ionicons name="add" size={22} color={COLORS.white} />
               </Pressable>
             </View>
           )}
@@ -250,7 +251,7 @@ export default function Config() {
                 }
                 disabled={config.roundTimer <= 60}
               >
-                <Text style={styles.counterBtnText}>−</Text>
+                <Ionicons name="remove" size={22} color={COLORS.white} />
               </Pressable>
               <Text style={[styles.counterValue, { color: theme.text }]}>{config.roundTimer / 60} min</Text>
               <Pressable
@@ -263,7 +264,7 @@ export default function Config() {
                 }
                 disabled={config.roundTimer >= 300}
               >
-                <Text style={styles.counterBtnText}>+</Text>
+                <Ionicons name="add" size={22} color={COLORS.white} />
               </Pressable>
             </View>
           )}
@@ -303,7 +304,7 @@ export default function Config() {
                     onPress={() => setConfig((c) => ({ ...c, hideTimer: clamp((c.hideTimer ?? 3) - 1, 1, maxHide) }))}
                     disabled={config.hideTimer <= 1}
                   >
-                    <Text style={styles.counterBtnText}>−</Text>
+                    <Ionicons name="remove" size={22} color={COLORS.white} />
                   </Pressable>
                   <Text style={[styles.counterValue, { color: theme.text }]}>{config.hideTimer}s</Text>
                   <Pressable
@@ -311,7 +312,7 @@ export default function Config() {
                     onPress={() => setConfig((c) => ({ ...c, hideTimer: clamp((c.hideTimer ?? 3) + 1, 1, maxHide) }))}
                     disabled={config.hideTimer >= maxHide}
                   >
-                    <Text style={styles.counterBtnText}>+</Text>
+                    <Ionicons name="add" size={22} color={COLORS.white} />
                   </Pressable>
                 </View>
               );
@@ -345,12 +346,6 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
     borderBottomWidth: 1,
   },
-  backText: {
-    fontSize: 16,
-    color: COLORS.primary,
-    fontWeight: "600",
-    width: 80,
-  },
   headerTitle: {
     fontSize: 18,
     fontWeight: "800",
@@ -372,10 +367,7 @@ const styles = StyleSheet.create({
     fontSize: 13,
     marginTop: -8,
   },
-  chevron: {
-    fontSize: 22,
-    fontWeight: "600",
-  },
+
   row: {
     flexDirection: "row",
     alignItems: "center",
@@ -411,12 +403,6 @@ const styles = StyleSheet.create({
   },
   counterBtnDisabled: {
     backgroundColor: COLORS.disabled,
-  },
-  counterBtnText: {
-    fontSize: 24,
-    fontWeight: "700",
-    color: COLORS.white,
-    lineHeight: 28,
   },
   counterValue: {
     fontSize: 36,
