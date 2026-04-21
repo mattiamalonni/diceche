@@ -1,5 +1,6 @@
 import { COLORS } from "@/constants/colors";
 import { useProfiles } from "@/contexts/ProfileContext";
+import { useSoundContext } from "@/contexts/SoundContext";
 import { useTheme } from "@/contexts/ThemeContext";
 import Constants from "expo-constants";
 import { useRouter } from "expo-router";
@@ -10,6 +11,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 export default function ProfileSelection() {
   const { profiles, setActiveProfile, deleteProfile, isLoaded } = useProfiles();
   const { theme, override, setOverride } = useTheme();
+  const { soundEnabled, setSoundEnabled } = useSoundContext();
   const router = useRouter();
   const [aboutVisible, setAboutVisible] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
@@ -60,6 +62,21 @@ export default function ProfileSelection() {
               <Text style={[styles.themeReset, { color: theme.textMuted }]}>Usa tema di sistema</Text>
             </Pressable>
           )}
+
+          <View style={[styles.modalDivider, { backgroundColor: theme.border }]} />
+
+          {/* Sound toggle */}
+          <View style={styles.themeRow}>
+            <Text style={[styles.themeLabel, { color: theme.text }]}>
+              {soundEnabled ? "🔔 Suoni attivi" : "🔕 Suoni disattivi"}
+            </Text>
+            <Switch
+              value={soundEnabled}
+              onValueChange={setSoundEnabled}
+              trackColor={{ true: COLORS.bg4, false: COLORS.border }}
+              thumbColor={COLORS.white}
+            />
+          </View>
 
           <View style={[styles.modalDivider, { backgroundColor: theme.border }]} />
 
