@@ -1,10 +1,14 @@
 export type SpecialGroup = "CH" | "GH" | "GL" | "GN" | "SC" | "QU";
 export type WordPack = "articoli_det" | "articoli_indet" | "prep_semplici" | "prep_articolate";
 
-export interface RoundConfig {
+export interface DictionaryConfig {
   base: boolean;
   specials: SpecialGroup[];
   packs: WordPack[];
+}
+
+export interface RoundConfig {
+  dictionary: DictionaryConfig;
   count: number;
   syllableTimer: number | null; // seconds per card, null = disabled
   roundTimer: number | null; // total round seconds, null = disabled
@@ -14,9 +18,11 @@ export interface RoundConfig {
 }
 
 export const DEFAULT_CONFIG: RoundConfig = {
-  base: true,
-  specials: ["CH", "GH", "GL", "GN", "SC", "QU"],
-  packs: ["articoli_det", "articoli_indet", "prep_semplici", "prep_articolate"],
+  dictionary: {
+    base: true,
+    specials: ["CH", "GH", "GL", "GN", "SC", "QU"],
+    packs: ["articoli_det", "articoli_indet", "prep_semplici", "prep_articolate"],
+  },
   count: 30,
   syllableTimer: null,
   roundTimer: null,
@@ -95,13 +101,13 @@ export const WORD_PACKS: Record<WordPack, string[]> = {
 export function buildPool(config: RoundConfig): string[] {
   const items: string[] = [];
 
-  if (config.base) {
+  if (config.dictionary.base) {
     items.push(...generateBase());
   }
 
-  items.push(...generateSpecials(config.specials));
+  items.push(...generateSpecials(config.dictionary.specials));
 
-  for (const pack of config.packs) {
+  for (const pack of config.dictionary.packs) {
     items.push(...WORD_PACKS[pack]);
   }
 
@@ -119,9 +125,9 @@ export function shuffle<T>(arr: T[]): T[] {
 
 export function getPoolSize(config: RoundConfig): number {
   let size = 0;
-  if (config.base) size += generateBase().length;
-  size += generateSpecials(config.specials).length;
-  for (const pack of config.packs) {
+  if (config.dictionary.base) size += generateBase().length;
+  size += generateSpecials(config.dictionary.specials).length;
+  for (const pack of config.dictionary.packs) {
     size += WORD_PACKS[pack].length;
   }
   return size;

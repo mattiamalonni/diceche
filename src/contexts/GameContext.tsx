@@ -1,4 +1,4 @@
-import { buildPool, RoundConfig } from "@/utils/syllables";
+import { buildPool, DEFAULT_CONFIG, DictionaryConfig, RoundConfig } from "@/utils/syllables";
 import React, { createContext, useCallback, useContext, useState } from "react";
 
 interface GameContextValue {
@@ -14,6 +14,8 @@ interface GameContextValue {
   isFinished: boolean;
   restartRound: () => void;
   finishRound: () => void;
+  pendingDictionary: DictionaryConfig;
+  setPendingDictionary: (d: DictionaryConfig) => void;
 }
 
 const GameContext = createContext<GameContextValue | null>(null);
@@ -25,6 +27,7 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
   const [wrongCount, setWrongCount] = useState(0);
   const [wrongItems, setWrongItems] = useState<string[]>([]);
   const [config, setConfig] = useState<RoundConfig | null>(null);
+  const [pendingDictionary, setPendingDictionary] = useState<DictionaryConfig>(DEFAULT_CONFIG.dictionary);
 
   const startRound = useCallback((cfg: RoundConfig) => {
     const pool = buildPool(cfg);
@@ -86,6 +89,8 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
         isFinished,
         restartRound,
         finishRound,
+        pendingDictionary,
+        setPendingDictionary,
       }}
     >
       {children}
