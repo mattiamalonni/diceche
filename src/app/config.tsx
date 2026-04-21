@@ -36,6 +36,7 @@ export default function Config() {
       syllableTimer: null,
       roundTimer: null,
       speech: false,
+      uppercase: true,
     },
     ...(activeProfile?.config ?? {}),
   });
@@ -222,10 +223,32 @@ export default function Config() {
           )}
         </View>
 
+        {/* Visualizzazione */}
+        <View style={[styles.section, { backgroundColor: theme.surface2 }]}>
+          <Text style={[styles.sectionTitle, { color: theme.text }]}>Visualizzazione</Text>
+          <View style={styles.row}>
+            <Text style={[styles.rowLabel, { color: theme.text }]}>Testo sillabe</Text>
+          </View>
+          <View style={styles.segmented}>
+            <Pressable
+              style={[styles.segmentBtn, config.uppercase && { backgroundColor: COLORS.primary }]}
+              onPress={() => setConfig((c) => ({ ...c, uppercase: true }))}
+            >
+              <Text style={[styles.segmentBtnText, { color: config.uppercase ? COLORS.white : theme.text }]}>AA</Text>
+            </Pressable>
+            <Pressable
+              style={[styles.segmentBtn, !config.uppercase && { backgroundColor: COLORS.primary }]}
+              onPress={() => setConfig((c) => ({ ...c, uppercase: false }))}
+            >
+              <Text style={[styles.segmentBtnText, { color: !config.uppercase ? COLORS.white : theme.text }]}>aa</Text>
+            </Pressable>
+          </View>
+        </View>
+
         {/* Base section */}
         <View style={[styles.section, { backgroundColor: theme.surface2 }]}>
           <Text style={[styles.sectionTitle, { color: theme.text }]}>Sillabe base</Text>
-          <Text style={[styles.sectionSub, { color: theme.textMuted }]}>≈70 sillabe (ba, be, ce, ci, qua…)</Text>
+          <Text style={[styles.sectionSub, { color: theme.textMuted }]}>≈70 sillabe (ba, be, ce, ci…)</Text>
           <View style={styles.row}>
             <Text style={[styles.rowLabel, { color: theme.text }]}>Attiva</Text>
             <Switch
@@ -370,6 +393,24 @@ const styles = StyleSheet.create({
     fontWeight: "800",
     minWidth: 60,
     textAlign: "center",
+  },
+  segmented: {
+    flexDirection: "row",
+    borderRadius: 12,
+    overflow: "hidden",
+    borderWidth: 1.5,
+    borderColor: COLORS.primary,
+  },
+  segmentBtn: {
+    flex: 1,
+    paddingVertical: 10,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  segmentBtnText: {
+    fontSize: 16,
+    fontWeight: "800",
+    letterSpacing: 1,
   },
   footer: {
     padding: 20,

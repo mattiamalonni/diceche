@@ -2,7 +2,7 @@ import { COLORS } from "@/constants/colors";
 import { useGame } from "@/contexts/GameContext";
 import { useProfiles } from "@/contexts/ProfileContext";
 import { useRouter } from "expo-router";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import Animated, {
   Easing,
@@ -65,9 +65,8 @@ function Confetti() {
 
 export default function Completion() {
   const { activeProfile } = useProfiles();
-  const { restartRound, correctCount, items, wrongItems } = useGame();
+  const { restartRound, correctCount, items } = useGame();
   const router = useRouter();
-  const [errorsExpanded, setErrorsExpanded] = useState(false);
 
   const scale = useSharedValue(0.5);
   const opacity = useSharedValue(0);
@@ -104,22 +103,6 @@ export default function Completion() {
           <Text style={styles.score}>
             {correctCount} / {items.length} corrette
           </Text>
-          {wrongItems.length > 0 && (
-            <Pressable style={styles.errorsToggle} onPress={() => setErrorsExpanded((v) => !v)}>
-              <Text style={styles.errorsToggleText}>
-                {errorsExpanded ? "▲ Nascondi errori" : `▼ Vedi errori (${wrongItems.length})`}
-              </Text>
-            </Pressable>
-          )}
-          {errorsExpanded && (
-            <View style={styles.errorsList}>
-              {wrongItems.map((item, i) => (
-                <View key={i} style={styles.errorChip}>
-                  <Text style={styles.errorChipText}>{item}</Text>
-                </View>
-              ))}
-            </View>
-          )}
         </Animated.View>
       </View>
 
@@ -198,37 +181,5 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     color: COLORS.dark,
     opacity: 0.7,
-  },
-  errorsToggle: {
-    marginTop: 8,
-    paddingVertical: 6,
-    paddingHorizontal: 16,
-    borderRadius: 20,
-    backgroundColor: "rgba(0,0,0,0.08)",
-  },
-  errorsToggleText: {
-    fontSize: 14,
-    fontWeight: "700",
-    color: COLORS.dark,
-    opacity: 0.65,
-  },
-  errorsList: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: 8,
-    justifyContent: "center",
-    marginTop: 8,
-    maxWidth: 320,
-  },
-  errorChip: {
-    backgroundColor: "rgba(0,0,0,0.08)",
-    borderRadius: 12,
-    paddingHorizontal: 14,
-    paddingVertical: 6,
-  },
-  errorChipText: {
-    fontSize: 18,
-    fontWeight: "800",
-    color: COLORS.danger,
   },
 });

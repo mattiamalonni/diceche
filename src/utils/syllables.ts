@@ -9,6 +9,7 @@ export interface RoundConfig {
   syllableTimer: number | null; // seconds per card, null = disabled
   roundTimer: number | null; // total round seconds, null = disabled
   speech: boolean; // show pronunciation button (incompatible with syllableTimer)
+  uppercase: boolean; // display syllables in uppercase
 }
 
 export const DEFAULT_CONFIG: RoundConfig = {
@@ -19,6 +20,7 @@ export const DEFAULT_CONFIG: RoundConfig = {
   syllableTimer: null,
   roundTimer: null,
   speech: false,
+  uppercase: true,
 };
 
 const VOWELS = ["a", "e", "i", "o", "u"] as const;

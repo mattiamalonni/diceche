@@ -235,6 +235,7 @@ export default function Game() {
   }
 
   const current = items[currentIndex];
+  const displayCurrent = current ? (config?.uppercase !== false ? current.toUpperCase() : current) : "";
   const bgColor = getBgColor(currentIndex);
 
   const formatTime = (s: number) => {
@@ -295,7 +296,14 @@ export default function Game() {
 
             {/* Syllable */}
             <View style={styles.center}>
-              <Animated.Text style={[styles.syllable, syllableStyle]}>{current}</Animated.Text>
+              <Animated.Text
+                style={[styles.syllable, syllableStyle]}
+                numberOfLines={1}
+                adjustsFontSizeToFit
+                minimumFontScale={0.3}
+              >
+                {displayCurrent}
+              </Animated.Text>
             </View>
 
             {/* Buttons */}
@@ -391,6 +399,9 @@ const styles = StyleSheet.create({
     textShadowOffset: { width: 0, height: 4 },
     textShadowRadius: 8,
     letterSpacing: 4,
+    width: "100%",
+    textAlign: "center",
+    paddingHorizontal: 24,
   },
   countdownNumber: {
     fontSize: 160,
