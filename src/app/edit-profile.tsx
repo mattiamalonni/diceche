@@ -1,5 +1,6 @@
 import { AVATARS, COLORS, PROFILE_COLORS } from "@/constants/colors";
 import { useProfiles } from "@/contexts/ProfileContext";
+import { useTheme } from "@/contexts/ThemeContext";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useState } from "react";
 import { KeyboardAvoidingView, Platform, Pressable, SafeAreaView, ScrollView, StyleSheet, Text, TextInput } from "react-native";
@@ -7,6 +8,7 @@ import { KeyboardAvoidingView, Platform, Pressable, SafeAreaView, ScrollView, St
 export default function EditProfile() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const { profiles, updateProfile } = useProfiles();
+  const { theme } = useTheme();
   const router = useRouter();
 
   const profile = profiles.find((p) => p.id === id);
@@ -32,7 +34,7 @@ export default function EditProfile() {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={[styles.container, { backgroundColor: theme.surface }]}>
       <KeyboardAvoidingView style={styles.flex} behavior={Platform.OS === "ios" ? "padding" : undefined}>
         <Pressable style={styles.back} onPress={() => router.back()}>
           <Text style={styles.backText}>← Indietro</Text>
@@ -49,27 +51,27 @@ export default function EditProfile() {
           </Pressable>
 
           {/* Name */}
-          <Text style={styles.label}>Nome</Text>
+          <Text style={[styles.label, { color: theme.text }]}>Nome</Text>
           <TextInput
-            style={styles.input}
+            style={[styles.input, { borderColor: theme.border, color: theme.text, backgroundColor: theme.surface }]}
             value={name}
             onChangeText={setName}
             placeholder="Nome del bambino"
-            placeholderTextColor={COLORS.muted}
+            placeholderTextColor={theme.textMuted}
             returnKeyType="done"
             onSubmitEditing={handleSave}
             maxLength={20}
           />
 
           {/* Avatar picker */}
-          <Text style={styles.label}>Avatar</Text>
+          <Text style={[styles.label, { color: theme.text }]}>Avatar</Text>
           <Pressable style={[styles.avatarGrid, { pointerEvents: "box-none" } as any]}>
             {AVATARS.map((emoji) => (
               <Pressable
                 key={emoji}
                 style={[
                   styles.avatarBtn,
-                  { borderColor: color },
+                  { borderColor: color, backgroundColor: theme.surface2 },
                   avatar === emoji && styles.avatarBtnSelected,
                   avatar === emoji && { backgroundColor: color },
                 ]}
@@ -81,7 +83,7 @@ export default function EditProfile() {
           </Pressable>
 
           {/* Color picker */}
-          <Text style={styles.label}>Colore</Text>
+          <Text style={[styles.label, { color: theme.text }]}>Colore</Text>
           <Pressable style={styles.colorRow} onPress={() => {}}>
             {PROFILE_COLORS.map((c) => (
               <Pressable
@@ -107,7 +109,6 @@ export default function EditProfile() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.white,
   },
   flex: {
     flex: 1,
@@ -143,19 +144,16 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 18,
     fontWeight: "800",
-    color: COLORS.dark,
     alignSelf: "flex-start",
     marginTop: 4,
   },
   input: {
     width: "100%",
     borderWidth: 2,
-    borderColor: COLORS.border,
     borderRadius: 16,
     paddingHorizontal: 20,
     paddingVertical: 16,
     fontSize: 22,
-    color: COLORS.dark,
     textAlign: "center",
     fontWeight: "700",
   },
@@ -171,10 +169,8 @@ const styles = StyleSheet.create({
     height: 62,
     borderRadius: 16,
     borderWidth: 2,
-    borderColor: COLORS.border,
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: COLORS.disabledBg,
   },
   avatarBtnSelected: {
     borderWidth: 3,

@@ -1,6 +1,7 @@
 import { COLORS } from "@/constants/colors";
 import { useGame } from "@/contexts/GameContext";
 import { useProfiles } from "@/contexts/ProfileContext";
+import { useTheme } from "@/contexts/ThemeContext";
 import {
   ALL_PACKS,
   ALL_SPECIALS,
@@ -22,6 +23,7 @@ function clamp(val: number, min: number, max: number): number {
 export default function Config() {
   const { activeProfile, updateProfileConfig } = useProfiles();
   const { startRound } = useGame();
+  const { theme } = useTheme();
   const router = useRouter();
 
   const [config, setConfig] = useState<RoundConfig>({
@@ -80,20 +82,20 @@ export default function Config() {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.header}>
+    <SafeAreaView style={[styles.container, { backgroundColor: theme.surface }]}>
+      <View style={[styles.header, { borderBottomColor: theme.border }]}>
         <Pressable onPress={() => router.back()}>
           <Text style={styles.backText}>← Indietro</Text>
         </Pressable>
-        <Text style={styles.headerTitle}>Configura il round</Text>
+        <Text style={[styles.headerTitle, { color: theme.text }]}>Configura il round</Text>
         <View style={{ width: 80 }} />
       </View>
 
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
         {/* Count picker */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Numero di combinazioni</Text>
-          <Text style={styles.sectionSub}>Pool disponibile: {poolSize}</Text>
+        <View style={[styles.section, { backgroundColor: theme.surface2 }]}>
+          <Text style={[styles.sectionTitle, { color: theme.text }]}>Numero di combinazioni</Text>
+          <Text style={[styles.sectionSub, { color: theme.textMuted }]}>Pool disponibile: {poolSize}</Text>
           <View style={styles.counter}>
             <Pressable
               style={[styles.counterBtn, cappedCount <= 1 && styles.counterBtnDisabled]}
@@ -102,7 +104,7 @@ export default function Config() {
             >
               <Text style={styles.counterBtnText}>−</Text>
             </Pressable>
-            <Text style={styles.counterValue}>{cappedCount}</Text>
+            <Text style={[styles.counterValue, { color: theme.text }]}>{cappedCount}</Text>
             <Pressable
               style={[styles.counterBtn, cappedCount >= poolSize && styles.counterBtnDisabled]}
               onPress={() => handleCountChange(1)}
@@ -114,19 +116,19 @@ export default function Config() {
         </View>
 
         {/* Timer */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Timer</Text>
+        <View style={[styles.section, { backgroundColor: theme.surface2 }]}>
+          <Text style={[styles.sectionTitle, { color: theme.text }]}>Timer</Text>
 
           {/* Syllable timer */}
           <View style={styles.row}>
             <View style={styles.timerLabelGroup}>
-              <Text style={styles.rowLabel}>Timer per sillaba</Text>
-              <Text style={styles.rowSub}>Avanza automaticamente allo scadere</Text>
+              <Text style={[styles.rowLabel, { color: theme.text }]}>Timer per sillaba</Text>
+              <Text style={[styles.rowSub, { color: theme.textMuted }]}>Avanza automaticamente allo scadere</Text>
             </View>
             <Switch
               value={config.syllableTimer !== null}
               onValueChange={(val) => setConfig((c) => ({ ...c, syllableTimer: val ? 5 : null }))}
-              trackColor={{ true: COLORS.accent, false: COLORS.border }}
+              trackColor={{ true: COLORS.accent, false: theme.border }}
               thumbColor={COLORS.white}
             />
           </View>
@@ -144,7 +146,7 @@ export default function Config() {
               >
                 <Text style={styles.counterBtnText}>−</Text>
               </Pressable>
-              <Text style={styles.counterValue}>{config.syllableTimer}s</Text>
+              <Text style={[styles.counterValue, { color: theme.text }]}>{config.syllableTimer}s</Text>
               <Pressable
                 style={[styles.counterBtn, config.syllableTimer >= 30 && styles.counterBtnDisabled]}
                 onPress={() =>
@@ -163,13 +165,13 @@ export default function Config() {
           {/* Round timer */}
           <View style={styles.row}>
             <View style={styles.timerLabelGroup}>
-              <Text style={styles.rowLabel}>Timer round</Text>
-              <Text style={styles.rowSub}>Termina il round allo scadere</Text>
+              <Text style={[styles.rowLabel, { color: theme.text }]}>Timer round</Text>
+              <Text style={[styles.rowSub, { color: theme.textMuted }]}>Termina il round allo scadere</Text>
             </View>
             <Switch
               value={config.roundTimer !== null}
               onValueChange={(val) => setConfig((c) => ({ ...c, roundTimer: val ? 60 : null }))}
-              trackColor={{ true: COLORS.accent, false: COLORS.border }}
+              trackColor={{ true: COLORS.accent, false: theme.border }}
               thumbColor={COLORS.white}
             />
           </View>
@@ -187,7 +189,7 @@ export default function Config() {
               >
                 <Text style={styles.counterBtnText}>−</Text>
               </Pressable>
-              <Text style={styles.counterValue}>{config.roundTimer / 60} min</Text>
+              <Text style={[styles.counterValue, { color: theme.text }]}>{config.roundTimer / 60} min</Text>
               <Pressable
                 style={[styles.counterBtn, config.roundTimer >= 300 && styles.counterBtnDisabled]}
                 onPress={() =>
@@ -205,30 +207,30 @@ export default function Config() {
         </View>
 
         {/* Base section */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Sillabe base</Text>
-          <Text style={styles.sectionSub}>≈70 sillabe (ba, be, ce, ci, qua…)</Text>
+        <View style={[styles.section, { backgroundColor: theme.surface2 }]}>
+          <Text style={[styles.sectionTitle, { color: theme.text }]}>Sillabe base</Text>
+          <Text style={[styles.sectionSub, { color: theme.textMuted }]}>≈70 sillabe (ba, be, ce, ci, qua…)</Text>
           <View style={styles.row}>
-            <Text style={styles.rowLabel}>Attiva</Text>
+            <Text style={[styles.rowLabel, { color: theme.text }]}>Attiva</Text>
             <Switch
               value={config.base}
               onValueChange={toggleBase}
-              trackColor={{ true: COLORS.primary, false: COLORS.border }}
+              trackColor={{ true: COLORS.primary, false: theme.border }}
               thumbColor={COLORS.white}
             />
           </View>
         </View>
 
         {/* Specials */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Suoni speciali</Text>
+        <View style={[styles.section, { backgroundColor: theme.surface2 }]}>
+          <Text style={[styles.sectionTitle, { color: theme.text }]}>Suoni speciali</Text>
           {ALL_SPECIALS.map((group) => (
             <View key={group} style={styles.row}>
-              <Text style={styles.rowLabel}>{SPECIAL_LABELS[group]}</Text>
+              <Text style={[styles.rowLabel, { color: theme.text }]}>{SPECIAL_LABELS[group]}</Text>
               <Switch
                 value={config.specials.includes(group)}
                 onValueChange={() => toggleSpecial(group)}
-                trackColor={{ true: COLORS.secondary, false: COLORS.border }}
+                trackColor={{ true: COLORS.secondary, false: theme.border }}
                 thumbColor={COLORS.white}
               />
             </View>
@@ -236,15 +238,15 @@ export default function Config() {
         </View>
 
         {/* Word packs */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Parole</Text>
+        <View style={[styles.section, { backgroundColor: theme.surface2 }]}>
+          <Text style={[styles.sectionTitle, { color: theme.text }]}>Parole</Text>
           {ALL_PACKS.map((pack) => (
             <View key={pack} style={styles.row}>
-              <Text style={styles.rowLabel}>{WORD_PACK_LABELS[pack]}</Text>
+              <Text style={[styles.rowLabel, { color: theme.text }]}>{WORD_PACK_LABELS[pack]}</Text>
               <Switch
                 value={config.packs.includes(pack)}
                 onValueChange={() => togglePack(pack)}
-                trackColor={{ true: COLORS.bg4, false: COLORS.border }}
+                trackColor={{ true: COLORS.bg4, false: theme.border }}
                 thumbColor={COLORS.white}
               />
             </View>
@@ -269,7 +271,6 @@ export default function Config() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.white,
   },
   header: {
     flexDirection: "row",
@@ -278,7 +279,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingVertical: 14,
     borderBottomWidth: 1,
-    borderBottomColor: COLORS.border,
   },
   backText: {
     fontSize: 16,
@@ -289,14 +289,12 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 18,
     fontWeight: "800",
-    color: COLORS.dark,
   },
   scrollContent: {
     padding: 20,
     gap: 12,
   },
   section: {
-    backgroundColor: COLORS.disabledBg,
     borderRadius: 16,
     padding: 16,
     gap: 12,
@@ -304,11 +302,9 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 16,
     fontWeight: "800",
-    color: COLORS.dark,
   },
   sectionSub: {
     fontSize: 13,
-    color: COLORS.muted,
     marginTop: -8,
   },
   row: {
@@ -318,7 +314,6 @@ const styles = StyleSheet.create({
   },
   rowLabel: {
     fontSize: 15,
-    color: COLORS.dark,
     flex: 1,
     paddingRight: 8,
   },
@@ -328,7 +323,6 @@ const styles = StyleSheet.create({
   },
   rowSub: {
     fontSize: 12,
-    color: COLORS.muted,
     marginTop: 2,
   },
   counter: {
@@ -358,7 +352,6 @@ const styles = StyleSheet.create({
   counterValue: {
     fontSize: 36,
     fontWeight: "800",
-    color: COLORS.dark,
     minWidth: 60,
     textAlign: "center",
   },

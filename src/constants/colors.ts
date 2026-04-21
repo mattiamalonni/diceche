@@ -1,3 +1,30 @@
+export interface AppTheme {
+  surface: string; // main screen background
+  surface2: string; // card / section background
+  text: string; // primary text
+  textMuted: string; // secondary / muted text
+  border: string; // borders and dividers
+  isDark: boolean;
+}
+
+export const LIGHT_THEME: AppTheme = {
+  surface: "#FFFFFF",
+  surface2: "#F0F0F0",
+  text: "#2D3436",
+  textMuted: "#636E72",
+  border: "#DFE6E9",
+  isDark: false,
+};
+
+export const DARK_THEME: AppTheme = {
+  surface: "#1C1C1E",
+  surface2: "#2C2C2E",
+  text: "#F2F2F7",
+  textMuted: "#A0A0A5",
+  border: "#3A3A3C",
+  isDark: true,
+};
+
 export const COLORS = {
   primary: "#FF6B6B",
   secondary: "#4ECDC4",

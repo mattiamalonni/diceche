@@ -1,12 +1,14 @@
 import { COLORS } from "@/constants/colors";
 import { useProfiles } from "@/contexts/ProfileContext";
+import { useTheme } from "@/contexts/ThemeContext";
 import Constants from "expo-constants";
 import { useRouter } from "expo-router";
 import { useState } from "react";
-import { ActivityIndicator, Alert, Modal, Pressable, SafeAreaView, StyleSheet, Text, View } from "react-native";
+import { ActivityIndicator, Alert, Modal, Pressable, SafeAreaView, StyleSheet, Switch, Text, View } from "react-native";
 
 export default function ProfileSelection() {
   const { profiles, setActiveProfile, deleteProfile, isLoaded } = useProfiles();
+  const { theme, override, setOverride } = useTheme();
   const router = useRouter();
   const [aboutVisible, setAboutVisible] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
@@ -26,30 +28,46 @@ export default function ProfileSelection() {
     ]);
   };
 
-  const AboutButton = () => (
-    <Pressable style={styles.aboutBtn} onPress={() => setAboutVisible(true)}>
-      <Text style={styles.aboutBtnText}>?</Text>
-    </Pressable>
-  );
-
-  const AboutModal = () => (
+  const aboutModal = (
     <Modal visible={aboutVisible} transparent animationType="fade" onRequestClose={() => setAboutVisible(false)}>
       <Pressable style={styles.overlay} onPress={() => setAboutVisible(false)}>
-        <Pressable style={styles.modalCard} onPress={() => {}}>
-          <Text style={styles.modalDedication}>{"Dedicato a Dodi e Nene.\nCon amore\npapà"}</Text>
-          <View style={styles.modalDivider} />
-          <Text style={styles.modalVersion}>v{version}</Text>
-          <Pressable style={styles.modalClose} onPress={() => setAboutVisible(false)}>
-            <Text style={styles.modalCloseText}>Chiudi</Text>
+        <Pressable style={[styles.modalCard, { backgroundColor: theme.surface }]} onPress={() => {}}>
+          <Text style={[styles.modalDedication, { color: theme.textMuted }]}>{"Dedicato a Dodi e Nene.\nCon amore\npapà"}</Text>
+          <View style={[styles.modalDivider, { backgroundColor: theme.border }]} />
+          {/* Dark mode toggle */}
+          <View style={styles.themeRow}>
+            <Text style={[styles.themeLabel, { color: theme.text }]}>{theme.isDark ? "🌙 Tema scuro" : "☀️ Tema chiaro"}</Text>
+            <Switch
+              value={theme.isDark}
+              onValueChange={(val) => setOverride(val ? "dark" : "light")}
+              trackColor={{ true: COLORS.bg4, false: COLORS.border }}
+              thumbColor={COLORS.white}
+            />
+          </View>
+          {override !== null && (
+            <Pressable onPress={() => setOverride(null)}>
+              <Text style={[styles.themeReset, { color: theme.textMuted }]}>Usa tema di sistema</Text>
+            </Pressable>
+          )}
+          <View style={[styles.modalDivider, { backgroundColor: theme.border }]} />
+          <Text style={[styles.modalVersion, { color: theme.textMuted }]}>v{version}</Text>
+          <Pressable style={[styles.modalClose, { backgroundColor: theme.surface2 }]} onPress={() => setAboutVisible(false)}>
+            <Text style={[styles.modalCloseText, { color: theme.textMuted }]}>Chiudi</Text>
           </Pressable>
         </Pressable>
       </Pressable>
     </Modal>
   );
 
+  const aboutButton = (
+    <Pressable style={[styles.aboutBtn, { borderColor: theme.textMuted }]} onPress={() => setAboutVisible(true)}>
+      <Text style={[styles.aboutBtnText, { color: theme.textMuted }]}>?</Text>
+    </Pressable>
+  );
+
   if (!isLoaded) {
     return (
-      <View style={styles.center}>
+      <View style={[styles.center, { backgroundColor: theme.surface }]}>
         <ActivityIndicator size="large" color={COLORS.primary} />
       </View>
     );
@@ -57,14 +75,12 @@ export default function ProfileSelection() {
 
   if (profiles.length === 0) {
     return (
-      <SafeAreaView style={styles.container}>
-        <AboutModal />
-        <View style={styles.topBar}>
-          <AboutButton />
-        </View>
+      <SafeAreaView style={[styles.container, { backgroundColor: theme.surface }]}>
+        {aboutModal}
+        <View style={styles.topBar}>{aboutButton}</View>
         <View style={styles.content}>
-          <Text style={styles.title}>Ciao! 👋</Text>
-          <Text style={styles.subtitle}>Come ti chiami?</Text>
+          <Text style={[styles.title, { color: theme.text }]}>Ciao! 👋</Text>
+          <Text style={[styles.subtitle, { color: theme.textMuted }]}>Come ti chiami?</Text>
           <Pressable style={styles.addButton} onPress={() => router.push("/add-profile")}>
             <Text style={styles.addButtonText}>Aggiungi bambino</Text>
           </Pressable>
@@ -76,13 +92,11 @@ export default function ProfileSelection() {
   const canAdd = profiles.length < 4;
 
   return (
-    <SafeAreaView style={styles.container}>
-      <AboutModal />
-      <View style={styles.topBar}>
-        <AboutButton />
-      </View>
+    <SafeAreaView style={[styles.container, { backgroundColor: theme.surface }]}>
+      {aboutModal}
+      <View style={styles.topBar}>{aboutButton}</View>
       <View style={styles.content}>
-        <Text style={styles.title}>Chi gioca?</Text>
+        <Text style={[styles.title, { color: theme.text }]}>Chi gioca?</Text>
         <View style={styles.grid}>
           {profiles.map((profile) => (
             <Pressable
@@ -107,14 +121,17 @@ export default function ProfileSelection() {
             </Pressable>
           ))}
           {canAdd && !isEditMode && (
-            <Pressable style={styles.addCard} onPress={() => router.push("/add-profile")}>
-              <Text style={styles.addIcon}>+</Text>
-              <Text style={styles.addLabel}>Aggiungi</Text>
+            <Pressable
+              style={[styles.addCard, { backgroundColor: theme.surface2, borderColor: theme.border }]}
+              onPress={() => router.push("/add-profile")}
+            >
+              <Text style={[styles.addIcon, { color: theme.textMuted }]}>+</Text>
+              <Text style={[styles.addLabel, { color: theme.textMuted }]}>Aggiungi</Text>
             </Pressable>
           )}
         </View>
-        <Pressable style={styles.editButton} onPress={() => setIsEditMode((v) => !v)}>
-          <Text style={styles.editButtonText}>{isEditMode ? "Fatto" : "Modifica"}</Text>
+        <Pressable style={[styles.editButton, { backgroundColor: theme.surface2 }]} onPress={() => setIsEditMode((v) => !v)}>
+          <Text style={[styles.editButtonText, { color: theme.textMuted }]}>{isEditMode ? "Fatto" : "Modifica"}</Text>
         </Pressable>
       </View>
     </SafeAreaView>
@@ -126,11 +143,9 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: COLORS.white,
   },
   container: {
     flex: 1,
-    backgroundColor: COLORS.white,
   },
   topBar: {
     flexDirection: "row",
@@ -169,7 +184,6 @@ const styles = StyleSheet.create({
   },
   modalCard: {
     width: "100%",
-    backgroundColor: COLORS.white,
     borderRadius: 24,
     padding: 28,
     alignItems: "center",
@@ -191,7 +205,22 @@ const styles = StyleSheet.create({
   modalDivider: {
     width: "60%",
     height: 1,
-    backgroundColor: COLORS.border,
+  },
+  themeRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    width: "100%",
+    paddingHorizontal: 4,
+  },
+  themeLabel: {
+    fontSize: 15,
+    fontWeight: "600",
+  },
+  themeReset: {
+    fontSize: 12,
+    textDecorationLine: "underline",
+    marginTop: -8,
   },
   modalVersion: {
     fontSize: 13,
@@ -202,7 +231,6 @@ const styles = StyleSheet.create({
     marginTop: 4,
     paddingVertical: 10,
     paddingHorizontal: 32,
-    backgroundColor: COLORS.disabledBg,
     borderRadius: 20,
   },
   modalCloseText: {
@@ -213,12 +241,10 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 36,
     fontWeight: "800",
-    color: COLORS.dark,
     marginBottom: 8,
   },
   subtitle: {
     fontSize: 20,
-    color: COLORS.muted,
     marginBottom: 40,
   },
   grid: {
@@ -252,10 +278,8 @@ const styles = StyleSheet.create({
   addCard: {
     width: 140,
     height: 160,
-    backgroundColor: COLORS.disabledBg,
     borderRadius: 24,
     borderWidth: 2,
-    borderColor: COLORS.border,
     borderStyle: "dashed",
     alignItems: "center",
     justifyContent: "center",
@@ -263,13 +287,11 @@ const styles = StyleSheet.create({
   },
   addIcon: {
     fontSize: 40,
-    color: COLORS.muted,
     lineHeight: 44,
   },
   addLabel: {
     fontSize: 14,
     fontWeight: "600",
-    color: COLORS.muted,
   },
   addButton: {
     backgroundColor: COLORS.primary,
@@ -311,11 +333,9 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     paddingHorizontal: 32,
     borderRadius: 20,
-    backgroundColor: COLORS.disabledBg,
   },
   editButtonText: {
     fontSize: 15,
     fontWeight: "700",
-    color: COLORS.muted,
   },
 });

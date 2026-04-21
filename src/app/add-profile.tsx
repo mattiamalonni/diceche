@@ -1,5 +1,6 @@
 import { AVATARS, COLORS, PROFILE_COLORS } from "@/constants/colors";
 import { useProfiles } from "@/contexts/ProfileContext";
+import { useTheme } from "@/contexts/ThemeContext";
 import { useRouter } from "expo-router";
 import { useState } from "react";
 import {
@@ -20,6 +21,7 @@ function randomItem<T>(arr: readonly T[]): T {
 
 export default function AddProfile() {
   const { addProfile, setActiveProfile } = useProfiles();
+  const { theme } = useTheme();
   const router = useRouter();
   const [name, setName] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -38,7 +40,7 @@ export default function AddProfile() {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={[styles.container, { backgroundColor: theme.surface }]}>
       <KeyboardAvoidingView style={styles.flex} behavior={Platform.OS === "ios" ? "padding" : undefined}>
         <Pressable style={styles.back} onPress={() => router.back()}>
           <Text style={styles.backText}>← Indietro</Text>
@@ -55,13 +57,13 @@ export default function AddProfile() {
           </View>
 
           {/* Name */}
-          <Text style={styles.label}>Come ti chiami?</Text>
+          <Text style={[styles.label, { color: theme.text }]}>Come ti chiami?</Text>
           <TextInput
-            style={styles.input}
+            style={[styles.input, { borderColor: theme.border, color: theme.text, backgroundColor: theme.surface }]}
             value={name}
             onChangeText={setName}
             placeholder="Nome del bambino"
-            placeholderTextColor={COLORS.muted}
+            placeholderTextColor={theme.textMuted}
             autoFocus
             returnKeyType="done"
             onSubmitEditing={handleAdd}
@@ -69,14 +71,14 @@ export default function AddProfile() {
           />
 
           {/* Avatar picker */}
-          <Text style={styles.label}>Scegli il tuo avatar</Text>
+          <Text style={[styles.label, { color: theme.text }]}>Scegli il tuo avatar</Text>
           <View style={styles.avatarGrid}>
             {AVATARS.map((emoji) => (
               <Pressable
                 key={emoji}
                 style={[
                   styles.avatarBtn,
-                  { borderColor: color },
+                  { borderColor: color, backgroundColor: theme.surface2 },
                   avatar === emoji && styles.avatarBtnSelected,
                   avatar === emoji && { backgroundColor: color },
                 ]}
@@ -88,7 +90,7 @@ export default function AddProfile() {
           </View>
 
           {/* Color picker */}
-          <Text style={styles.label}>Scegli il tuo colore</Text>
+          <Text style={[styles.label, { color: theme.text }]}>Scegli il tuo colore</Text>
           <View style={styles.colorRow}>
             {PROFILE_COLORS.map((c) => (
               <Pressable
@@ -114,7 +116,6 @@ export default function AddProfile() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.white,
   },
   flex: {
     flex: 1,
@@ -150,19 +151,16 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 18,
     fontWeight: "800",
-    color: COLORS.dark,
     alignSelf: "flex-start",
     marginTop: 4,
   },
   input: {
     width: "100%",
     borderWidth: 2,
-    borderColor: COLORS.border,
     borderRadius: 16,
     paddingHorizontal: 20,
     paddingVertical: 16,
     fontSize: 22,
-    color: COLORS.dark,
     textAlign: "center",
     fontWeight: "700",
   },
@@ -178,10 +176,8 @@ const styles = StyleSheet.create({
     height: 62,
     borderRadius: 16,
     borderWidth: 2,
-    borderColor: COLORS.border,
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: COLORS.disabledBg,
   },
   avatarBtnSelected: {
     borderWidth: 3,
