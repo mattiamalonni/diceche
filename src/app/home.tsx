@@ -1,16 +1,27 @@
 import { COLORS } from "@/constants/colors";
+import { useGame } from "@/contexts/GameContext";
 import { useProfiles } from "@/contexts/ProfileContext";
 import { useRouter } from "expo-router";
 import { Pressable, SafeAreaView, StyleSheet, Text, View } from "react-native";
 
 export default function Home() {
   const { activeProfile } = useProfiles();
+  const { startRound, config: lastConfig } = useGame();
   const router = useRouter();
 
   if (!activeProfile) {
     router.replace("/");
     return null;
   }
+
+  const stats = activeProfile.stats;
+  const avgAccuracy = stats && stats.gamesPlayed > 0 ? Math.round((stats.totalCorrect / stats.totalItems) * 100) : null;
+
+  const handleQuickPlay = () => {
+    const cfg = lastConfig ?? activeProfile.config;
+    startRound(cfg);
+    router.push("/game");
+  };
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: activeProfile.color ?? COLORS.bg2 }]}>
@@ -28,11 +39,23 @@ export default function Home() {
         <Text style={styles.name} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.5}>
           {activeProfile.name}!
         </Text>
+        {stats && stats.gamesPlayed > 0 && (
+          <Text style={styles.stats}>
+            {stats.gamesPlayed} {stats.gamesPlayed === 1 ? "partita" : "partite"} · {avgAccuracy}% media
+          </Text>
+        )}
       </View>
 
-      <Pressable style={styles.playButton} onPress={() => router.push("/config")}>
-        <Text style={[styles.playButtonText, { color: activeProfile.color ?? COLORS.bg2 }]}>▶ Gioca</Text>
-      </Pressable>
+      <View style={styles.buttons}>
+        <Pressable style={styles.playButton} onPress={() => router.push("/config")}>
+          <Text style={[styles.playButtonText, { color: activeProfile.color ?? COLORS.bg2 }]}>▶ Gioca</Text>
+        </Pressable>
+        {(lastConfig ?? activeProfile.config) && (
+          <Pressable style={styles.quickPlayButton} onPress={handleQuickPlay}>
+            <Text style={styles.quickPlayText}>⚡ Ripeti</Text>
+          </Pressable>
+        )}
+      </View>
     </SafeAreaView>
   );
 }
@@ -88,8 +111,18 @@ const styles = StyleSheet.create({
     color: COLORS.white,
     maxWidth: "90%",
   },
-  playButton: {
+  stats: {
+    fontSize: 15,
+    fontWeight: "600",
+    color: COLORS.white,
+    opacity: 0.75,
+    marginTop: 4,
+  },
+  buttons: {
     margin: 32,
+    gap: 12,
+  },
+  playButton: {
     backgroundColor: COLORS.white,
     paddingVertical: 20,
     borderRadius: 40,
@@ -104,5 +137,16 @@ const styles = StyleSheet.create({
     fontSize: 26,
     fontWeight: "800",
     color: COLORS.bg2,
+  },
+  quickPlayButton: {
+    paddingVertical: 14,
+    borderRadius: 40,
+    alignItems: "center",
+    backgroundColor: "rgba(255,255,255,0.2)",
+  },
+  quickPlayText: {
+    fontSize: 18,
+    fontWeight: "700",
+    color: COLORS.white,
   },
 });

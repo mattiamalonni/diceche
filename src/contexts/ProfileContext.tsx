@@ -2,12 +2,19 @@ import { DEFAULT_CONFIG, RoundConfig } from "@/utils/syllables";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import React, { createContext, useCallback, useContext, useEffect, useState } from "react";
 
+export interface ProfileStats {
+  gamesPlayed: number;
+  totalCorrect: number;
+  totalItems: number;
+}
+
 export interface Profile {
   id: string;
   name: string;
   avatar: string;
   color: string;
   config: RoundConfig;
+  stats: ProfileStats;
 }
 
 interface ProfileContextValue {
@@ -18,6 +25,7 @@ interface ProfileContextValue {
   updateProfile: (id: string, name: string, avatar: string, color: string) => Promise<void>;
   deleteProfile: (id: string) => Promise<void>;
   updateProfileConfig: (id: string, config: RoundConfig) => Promise<void>;
+  updateProfileStats: (id: string, correct: number, total: number) => Promise<void>;
   isLoaded: boolean;
 }
 
@@ -54,6 +62,7 @@ export function ProfileProvider({ children }: { children: React.ReactNode }) {
         avatar,
         color,
         config: { ...DEFAULT_CONFIG },
+        stats: { gamesPlayed: 0, totalCorrect: 0, totalItems: 0 },
       };
       const updated = [...profiles, profile];
       await persist(updated);
@@ -93,6 +102,37 @@ export function ProfileProvider({ children }: { children: React.ReactNode }) {
     [profiles, persist],
   );
 
+  const updateProfileStats = useCallback(
+    async (id: string, correct: number, total: number) => {
+      const updated = profiles.map((p) =>
+        p.id === id
+          ? {
+              ...p,
+              stats: {
+                gamesPlayed: (p.stats?.gamesPlayed ?? 0) + 1,
+                totalCorrect: (p.stats?.totalCorrect ?? 0) + correct,
+                totalItems: (p.stats?.totalItems ?? 0) + total,
+              },
+            }
+          : p,
+      );
+      await persist(updated);
+      setActiveProfileState((prev) =>
+        prev?.id === id
+          ? {
+              ...prev,
+              stats: {
+                gamesPlayed: (prev.stats?.gamesPlayed ?? 0) + 1,
+                totalCorrect: (prev.stats?.totalCorrect ?? 0) + correct,
+                totalItems: (prev.stats?.totalItems ?? 0) + total,
+              },
+            }
+          : prev,
+      );
+    },
+    [profiles, persist],
+  );
+
   const setActiveProfile = useCallback((profile: Profile) => {
     setActiveProfileState(profile);
   }, []);
@@ -107,6 +147,7 @@ export function ProfileProvider({ children }: { children: React.ReactNode }) {
         updateProfile,
         deleteProfile,
         updateProfileConfig,
+        updateProfileStats,
         isLoaded,
       }}
     >

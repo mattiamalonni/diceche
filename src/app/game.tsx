@@ -1,5 +1,6 @@
 import { COLORS, getBgColor } from "@/constants/colors";
 import { useGame } from "@/contexts/GameContext";
+import * as Haptics from "expo-haptics";
 import { useRouter } from "expo-router";
 import { useEffect, useRef, useState } from "react";
 import { Alert, Pressable, SafeAreaView, StyleSheet, Text, View } from "react-native";
@@ -121,6 +122,7 @@ export default function Game() {
 
   const handleCorrect = () => {
     if (isTransitioningRef.current) return;
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     cancelAnimation(syllableProgress);
     animateAndAdvance(markCorrect);
   };
@@ -128,6 +130,7 @@ export default function Game() {
   const handleWrong = () => {
     if (isTransitioningRef.current) return;
     isTransitioningRef.current = true;
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
     cancelAnimation(syllableProgress);
     flashColor.value = withSequence(
       withTiming(1, { duration: 80 }),

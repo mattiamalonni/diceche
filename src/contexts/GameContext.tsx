@@ -6,6 +6,7 @@ interface GameContextValue {
   currentIndex: number;
   correctCount: number;
   wrongCount: number;
+  wrongItems: string[];
   config: RoundConfig | null;
   startRound: (config: RoundConfig) => void;
   markCorrect: () => void;
@@ -22,6 +23,7 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [correctCount, setCorrectCount] = useState(0);
   const [wrongCount, setWrongCount] = useState(0);
+  const [wrongItems, setWrongItems] = useState<string[]>([]);
   const [config, setConfig] = useState<RoundConfig | null>(null);
 
   const startRound = useCallback((cfg: RoundConfig) => {
@@ -31,6 +33,7 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
     setCurrentIndex(0);
     setCorrectCount(0);
     setWrongCount(0);
+    setWrongItems([]);
     setConfig(cfg);
   }, []);
 
@@ -42,6 +45,7 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
     setCurrentIndex(0);
     setCorrectCount(0);
     setWrongCount(0);
+    setWrongItems([]);
   }, [config]);
 
   const advance = (len: number) => {
@@ -55,13 +59,15 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
 
   const markWrong = useCallback(() => {
     setWrongCount((c) => c + 1);
+    setWrongItems((prev) => [...prev, items[currentIndex]]);
     setCurrentIndex((i) => Math.min(i + 1, items.length));
-  }, [items.length]);
+  }, [items, currentIndex]);
 
   const finishRound = useCallback(() => {
     setWrongCount((c) => c + 1);
+    setWrongItems((prev) => [...prev, items[currentIndex]]);
     setCurrentIndex(items.length);
-  }, [items.length]);
+  }, [items, currentIndex]);
 
   const isFinished = items.length > 0 && currentIndex >= items.length;
 
@@ -72,6 +78,7 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
         currentIndex,
         correctCount,
         wrongCount,
+        wrongItems,
         config,
         startRound,
         markCorrect,
