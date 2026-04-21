@@ -246,6 +246,15 @@ export default function Game() {
       {countdown !== null ? (
         <View style={styles.center}>
           <Animated.Text style={[styles.countdownNumber, countdownStyle]}>{countdown}</Animated.Text>
+          <Pressable
+            style={styles.skipBtn}
+            onPress={() => {
+              setCountdown(null);
+              countdownRef.current = null;
+            }}
+          >
+            <Text style={styles.skipBtnText}>Salta</Text>
+          </Pressable>
         </View>
       ) : (
         <>
@@ -361,6 +370,18 @@ const styles = StyleSheet.create({
     textShadowColor: "rgba(0,0,0,0.2)",
     textShadowOffset: { width: 0, height: 6 },
     textShadowRadius: 16,
+  },
+  skipBtn: {
+    marginTop: 24,
+    paddingHorizontal: 32,
+    paddingVertical: 12,
+    borderRadius: 24,
+    backgroundColor: "rgba(255,255,255,0.2)",
+  },
+  skipBtnText: {
+    fontSize: 18,
+    fontWeight: "700",
+    color: "rgba(255,255,255,0.85)",
   },
   buttons: {
     flexDirection: "row",
