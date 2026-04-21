@@ -1,7 +1,7 @@
 import { COLORS, getBgColor } from "@/constants/colors";
 import { useGame } from "@/contexts/GameContext";
 import * as Haptics from "expo-haptics";
-import { useRouter } from "expo-router";
+import { Stack, useRouter } from "expo-router";
 import * as Speech from "expo-speech";
 import { useEffect, useRef, useState } from "react";
 import { Alert, Pressable, StyleSheet, Text, View } from "react-native";
@@ -244,85 +244,88 @@ export default function Game() {
   };
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: bgColor }]}>
-      {/* Progress / exit button */}
-      <View style={styles.progressContainer}>
-        <Pressable style={styles.exitBtn} onPress={handleExit} hitSlop={8}>
-          <Text style={styles.exitBtnText}>×</Text>
-        </Pressable>
-        {countdown === null && (
-          <View style={styles.progressRow}>
-            <Text style={styles.progressText}>
-              {Math.min(currentIndex + 1, items.length)} / {items.length}
-            </Text>
-            {roundTimerSeconds !== null && roundSecondsLeft !== null && (
-              <Text style={[styles.progressText, roundSecondsLeft <= 30 && styles.progressTextWarning]}>
-                {"  ⏱ " + formatTime(roundSecondsLeft)}
-              </Text>
-            )}
-          </View>
-        )}
-      </View>
-
-      {countdown !== null ? (
-        <View style={styles.center}>
-          <Animated.Text style={[styles.countdownNumber, countdownStyle]}>{countdown}</Animated.Text>
-          <Pressable
-            style={styles.skipBtn}
-            onPress={() => {
-              setCountdown(null);
-              countdownRef.current = null;
-            }}
-          >
-            <Text style={styles.skipBtnText}>Salta</Text>
+    <>
+      <Stack.Screen options={{ gestureEnabled: false }} />
+      <SafeAreaView style={[styles.container, { backgroundColor: bgColor }]}>
+        {/* Progress / exit button */}
+        <View style={styles.progressContainer}>
+          <Pressable style={styles.exitBtn} onPress={handleExit} hitSlop={8}>
+            <Text style={styles.exitBtnText}>×</Text>
           </Pressable>
-        </View>
-      ) : (
-        <>
-          {/* Syllable timer bar */}
-          {syllableTimerSeconds !== null && (
-            <View
-              style={styles.timerBarContainer}
-              onLayout={(e) => {
-                barWidthShared.value = e.nativeEvent.layout.width;
-              }}
-            >
-              <Animated.View style={[styles.timerBarFill, timerBarStyle]} />
+          {countdown === null && (
+            <View style={styles.progressRow}>
+              <Text style={styles.progressText}>
+                {Math.min(currentIndex + 1, items.length)} / {items.length}
+              </Text>
+              {roundTimerSeconds !== null && roundSecondsLeft !== null && (
+                <Text style={[styles.progressText, roundSecondsLeft <= 30 && styles.progressTextWarning]}>
+                  {"  ⏱ " + formatTime(roundSecondsLeft)}
+                </Text>
+              )}
             </View>
           )}
+        </View>
 
-          {/* Syllable */}
+        {countdown !== null ? (
           <View style={styles.center}>
-            <Animated.Text style={[styles.syllable, syllableStyle]}>{current}</Animated.Text>
-          </View>
-
-          {/* Buttons */}
-          <View style={styles.buttons}>
+            <Animated.Text style={[styles.countdownNumber, countdownStyle]}>{countdown}</Animated.Text>
             <Pressable
-              style={[styles.btn, styles.wrongBtn]}
-              onPress={handleWrong}
-              android_ripple={{ color: "rgba(255,255,255,0.3)" }}
+              style={styles.skipBtn}
+              onPress={() => {
+                setCountdown(null);
+                countdownRef.current = null;
+              }}
             >
-              <Text style={styles.btnIcon}>✗</Text>
-              <Text style={styles.btnLabel}>Sbagliato</Text>
+              <Text style={styles.skipBtnText}>Salta</Text>
             </Pressable>
-            {speechEnabled && (
-              <Pressable style={[styles.btn, styles.speechBtn]} onPress={handleSpeech}>
-                <Text style={styles.btnIcon}>🔊</Text>
-              </Pressable>
+          </View>
+        ) : (
+          <>
+            {/* Syllable timer bar */}
+            {syllableTimerSeconds !== null && (
+              <View
+                style={styles.timerBarContainer}
+                onLayout={(e) => {
+                  barWidthShared.value = e.nativeEvent.layout.width;
+                }}
+              >
+                <Animated.View style={[styles.timerBarFill, timerBarStyle]} />
+              </View>
             )}
-            <Pressable
-              style={[styles.btn, styles.correctBtn]}
-              onPress={handleCorrect}
-              android_ripple={{ color: "rgba(255,255,255,0.3)" }}
-            >
-              <Text style={styles.btnIcon}>✓</Text>
-              <Text style={styles.btnLabel}>Giusto</Text>
-            </Pressable>
-          </View>
-        </>
-      )}
-    </SafeAreaView>
+
+            {/* Syllable */}
+            <View style={styles.center}>
+              <Animated.Text style={[styles.syllable, syllableStyle]}>{current}</Animated.Text>
+            </View>
+
+            {/* Buttons */}
+            <View style={styles.buttons}>
+              <Pressable
+                style={[styles.btn, styles.wrongBtn]}
+                onPress={handleWrong}
+                android_ripple={{ color: "rgba(255,255,255,0.3)" }}
+              >
+                <Text style={styles.btnIcon}>✗</Text>
+                <Text style={styles.btnLabel}>Sbagliato</Text>
+              </Pressable>
+              {speechEnabled && (
+                <Pressable style={[styles.btn, styles.speechBtn]} onPress={handleSpeech}>
+                  <Text style={styles.btnIcon}>🔊</Text>
+                </Pressable>
+              )}
+              <Pressable
+                style={[styles.btn, styles.correctBtn]}
+                onPress={handleCorrect}
+                android_ripple={{ color: "rgba(255,255,255,0.3)" }}
+              >
+                <Text style={styles.btnIcon}>✓</Text>
+                <Text style={styles.btnLabel}>Giusto</Text>
+              </Pressable>
+            </View>
+          </>
+        )}
+      </SafeAreaView>
+    </>
   );
 }
 
