@@ -3,7 +3,8 @@ import { useProfiles } from "@/contexts/ProfileContext";
 import { useTheme } from "@/contexts/ThemeContext";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useState } from "react";
-import { KeyboardAvoidingView, Platform, Pressable, SafeAreaView, ScrollView, StyleSheet, Text, TextInput } from "react-native";
+import { KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function EditProfile() {
   const { id } = useLocalSearchParams<{ id: string }>();

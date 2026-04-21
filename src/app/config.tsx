@@ -14,7 +14,8 @@ import {
 } from "@/utils/syllables";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
-import { Pressable, SafeAreaView, ScrollView, StyleSheet, Switch, Text, View } from "react-native";
+import { Pressable, ScrollView, StyleSheet, Switch, Text, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 function clamp(val: number, min: number, max: number): number {
   return Math.min(Math.max(val, min), max);

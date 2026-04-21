@@ -4,7 +4,8 @@ import { useTheme } from "@/contexts/ThemeContext";
 import Constants from "expo-constants";
 import { useRouter } from "expo-router";
 import { useState } from "react";
-import { ActivityIndicator, Alert, Modal, Pressable, SafeAreaView, StyleSheet, Switch, Text, View } from "react-native";
+import { ActivityIndicator, Alert, Modal, Pressable, StyleSheet, Switch, Text, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function ProfileSelection() {
   const { profiles, setActiveProfile, deleteProfile, isLoaded } = useProfiles();

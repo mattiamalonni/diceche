@@ -2,7 +2,8 @@ import { COLORS } from "@/constants/colors";
 import { useGame } from "@/contexts/GameContext";
 import { useProfiles } from "@/contexts/ProfileContext";
 import { useRouter } from "expo-router";
-import { Pressable, SafeAreaView, StyleSheet, Text, View } from "react-native";
+import { Pressable, StyleSheet, Text, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function Home() {
   const { activeProfile } = useProfiles();

@@ -3,7 +3,7 @@ import { useGame } from "@/contexts/GameContext";
 import * as Haptics from "expo-haptics";
 import { useRouter } from "expo-router";
 import { useEffect, useRef, useState } from "react";
-import { Alert, Pressable, SafeAreaView, StyleSheet, Text, View } from "react-native";
+import { Alert, Pressable, StyleSheet, Text, View } from "react-native";
 import Animated, {
   cancelAnimation,
   interpolateColor,
@@ -14,6 +14,7 @@ import Animated, {
   withSpring,
   withTiming,
 } from "react-native-reanimated";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function Game() {
   const { items, currentIndex, markCorrect, markWrong, isFinished, config, finishRound } = useGame();
