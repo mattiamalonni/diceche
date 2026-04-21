@@ -33,6 +33,7 @@ export default function Game() {
   const [roundSecondsLeft, setRoundSecondsLeft] = useState<number | null>(roundTimerSeconds);
   const roundIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const roundSecondsLeftRef = useRef<number | null>(roundTimerSeconds);
+  const isTransitioningRef = useRef(false);
 
   useEffect(() => {
     if (isFinished) {
@@ -89,10 +90,18 @@ export default function Game() {
     }
   }, [roundSecondsLeft]);
 
+  const scheduleUnlock = () => {
+    setTimeout(() => {
+      isTransitioningRef.current = false;
+    }, 400);
+  };
+
   const animateAndAdvance = (action: () => void) => {
+    isTransitioningRef.current = true;
     opacity.value = withTiming(0, { duration: 120 }, () => {
       translateX.value = -60;
       runOnJS(action)();
+      runOnJS(scheduleUnlock)();
       translateX.value = withSpring(0, { damping: 20, stiffness: 200 });
       opacity.value = withTiming(1, { duration: 150 });
     });
@@ -111,11 +120,14 @@ export default function Game() {
   }, [currentIndex, countdown]);
 
   const handleCorrect = () => {
+    if (isTransitioningRef.current) return;
     cancelAnimation(syllableProgress);
     animateAndAdvance(markCorrect);
   };
 
   const handleWrong = () => {
+    if (isTransitioningRef.current) return;
+    isTransitioningRef.current = true;
     cancelAnimation(syllableProgress);
     flashColor.value = withSequence(
       withTiming(1, { duration: 80 }),
