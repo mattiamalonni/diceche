@@ -95,7 +95,9 @@ export default function Completion() {
       <View style={styles.content}>
         <Animated.View style={heroStyle}>
           <Text style={styles.emoji}>🎉</Text>
-          <Text style={styles.title}>Bravo{activeProfile ? `, ${activeProfile.name}` : ""}!</Text>
+          <Text style={styles.title} numberOfLines={2} adjustsFontSizeToFit minimumFontScale={0.5}>
+            Bravo{activeProfile ? `, ${activeProfile.name}` : ""}!
+          </Text>
           <Text style={styles.subtitle}>Hai finito il round!</Text>
           <Text style={styles.score}>
             {correctCount} / {items.length} corrette

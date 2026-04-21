@@ -25,7 +25,9 @@ export default function Home() {
           <Text style={styles.avatarEmoji}>{activeProfile.avatar ?? activeProfile.name.charAt(0).toUpperCase()}</Text>
         </View>
         <Text style={styles.greeting}>Ciao,</Text>
-        <Text style={styles.name}>{activeProfile.name}!</Text>
+        <Text style={styles.name} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.5}>
+          {activeProfile.name}!
+        </Text>
       </View>
 
       <Pressable style={styles.playButton} onPress={() => router.push("/config")}>
@@ -84,6 +86,7 @@ const styles = StyleSheet.create({
     fontSize: 48,
     fontWeight: "800",
     color: COLORS.white,
+    maxWidth: "90%",
   },
   playButton: {
     margin: 32,

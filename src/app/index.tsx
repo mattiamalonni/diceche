@@ -112,7 +112,9 @@ export default function ProfileSelection() {
               }}
             >
               <Text style={styles.profileEmoji}>{profile.avatar ?? profile.name.charAt(0).toUpperCase()}</Text>
-              <Text style={styles.profileName}>{profile.name}</Text>
+              <Text style={styles.profileName} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.6}>
+                {profile.name}
+              </Text>
               {isEditMode && (
                 <Pressable style={styles.deleteBadge} onPress={() => handleDeleteProfile(profile.id, profile.name)} hitSlop={8}>
                   <Text style={styles.deleteBadgeText}>✕</Text>
@@ -274,6 +276,8 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "700",
     color: COLORS.white,
+    width: "100%",
+    textAlign: "center",
   },
   addCard: {
     width: 140,
