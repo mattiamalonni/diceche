@@ -23,6 +23,7 @@ export default function Game() {
 
   const syllableTimerSeconds = config?.syllableTimer ?? null;
   const roundTimerSeconds = config?.roundTimer ?? null;
+  const hideTimerSeconds = config?.hideTimer ?? null;
   const speechEnabled = config?.speech ?? false;
 
   const translateX = useSharedValue(0);
@@ -31,6 +32,7 @@ export default function Game() {
   const syllableProgress = useSharedValue(1); // 1 = full bar, 0 = empty
   const barWidthShared = useSharedValue(0);
   const countdownScale = useSharedValue(1.5);
+  const wordTextOpacity = useSharedValue(1); // 1 = word visible, 0 = ??? visible
 
   const [countdown, setCountdown] = useState<number | null>(3);
   const countdownRef = useRef<number | null>(3);
@@ -38,6 +40,7 @@ export default function Game() {
   const roundIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const roundSecondsLeftRef = useRef<number | null>(roundTimerSeconds);
   const isTransitioningRef = useRef(false);
+  const hideTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const bestVoiceRef = useRef<string | undefined>(undefined);
 
   // Pick best available Italian voice once on mount
@@ -105,6 +108,13 @@ export default function Game() {
     }
   }, [roundSecondsLeft]);
 
+  const clearHideTimer = () => {
+    if (hideTimerRef.current) {
+      clearTimeout(hideTimerRef.current);
+      hideTimerRef.current = null;
+    }
+  };
+
   const scheduleUnlock = () => {
     setTimeout(() => {
       isTransitioningRef.current = false;
@@ -114,7 +124,9 @@ export default function Game() {
   const animateAndAdvance = (action: () => void) => {
     isTransitioningRef.current = true;
     opacity.value = withTiming(0, { duration: 120 }, () => {
+      wordTextOpacity.value = 1;
       translateX.value = -60;
+      runOnJS(clearHideTimer)();
       runOnJS(action)();
       runOnJS(scheduleUnlock)();
       translateX.value = withSpring(0, { damping: 20, stiffness: 200 });
@@ -131,6 +143,19 @@ export default function Game() {
     });
     return () => {
       cancelAnimation(syllableProgress);
+    };
+  }, [currentIndex, countdown]);
+
+  // Hide timer: hide word (show ???) after N seconds on each new card
+  useEffect(() => {
+    if (!hideTimerSeconds || isFinished || countdown !== null) return;
+    wordTextOpacity.value = 1;
+    if (hideTimerRef.current) clearTimeout(hideTimerRef.current);
+    hideTimerRef.current = setTimeout(() => {
+      wordTextOpacity.value = withTiming(0, { duration: 200 });
+    }, hideTimerSeconds * 1000);
+    return () => {
+      if (hideTimerRef.current) clearTimeout(hideTimerRef.current);
     };
   }, [currentIndex, countdown]);
 
@@ -166,6 +191,10 @@ export default function Game() {
       clearInterval(roundIntervalRef.current);
       roundIntervalRef.current = null;
     }
+    if (hideTimerRef.current) {
+      clearTimeout(hideTimerRef.current);
+      hideTimerRef.current = null;
+    }
 
     const resumeTimers = () => {
       if (countdownRef.current !== null) return;
@@ -195,6 +224,13 @@ export default function Game() {
             setRoundSecondsLeft(remaining);
           }
         }, 500);
+      }
+      // Resume hide timer from beginning
+      if (hideTimerSeconds && !isFinished) {
+        wordTextOpacity.value = 1;
+        hideTimerRef.current = setTimeout(() => {
+          wordTextOpacity.value = withTiming(0, { duration: 200 });
+        }, hideTimerSeconds * 1000);
       }
     };
 
@@ -228,6 +264,9 @@ export default function Game() {
       backgroundColor: color,
     };
   });
+
+  const wordTextStyle = useAnimatedStyle(() => ({ opacity: wordTextOpacity.value }));
+  const hiddenTextStyle = useAnimatedStyle(() => ({ opacity: 1 - wordTextOpacity.value }));
 
   if (items.length === 0) {
     router.replace("/");
@@ -296,14 +335,26 @@ export default function Game() {
 
             {/* Syllable */}
             <View style={styles.center}>
-              <Animated.Text
-                style={[styles.syllable, syllableStyle]}
-                numberOfLines={1}
-                adjustsFontSizeToFit
-                minimumFontScale={0.3}
-              >
-                {displayCurrent}
-              </Animated.Text>
+              <View style={{ width: "100%" }}>
+                <Animated.Text
+                  style={[styles.syllable, syllableStyle, hideTimerSeconds !== null ? wordTextStyle : undefined]}
+                  numberOfLines={1}
+                  adjustsFontSizeToFit
+                  minimumFontScale={0.3}
+                >
+                  {displayCurrent}
+                </Animated.Text>
+                {hideTimerSeconds !== null && (
+                  <Animated.Text
+                    style={[styles.syllable, syllableStyle, hiddenTextStyle, styles.syllableHidden]}
+                    numberOfLines={1}
+                    adjustsFontSizeToFit
+                    minimumFontScale={0.3}
+                  >
+                    ???
+                  </Animated.Text>
+                )}
+              </View>
             </View>
 
             {/* Buttons */}
@@ -402,6 +453,10 @@ const styles = StyleSheet.create({
     width: "100%",
     textAlign: "center",
     paddingHorizontal: 24,
+  },
+  syllableHidden: {
+    position: "absolute",
+    top: 0,
   },
   countdownNumber: {
     fontSize: 160,

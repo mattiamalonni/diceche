@@ -35,6 +35,7 @@ export default function Config() {
       count: 30,
       syllableTimer: null,
       roundTimer: null,
+      hideTimer: null,
       speech: false,
       uppercase: true,
     },
@@ -122,20 +123,6 @@ export default function Config() {
         <View style={[styles.section, { backgroundColor: theme.surface2 }]}>
           <Text style={[styles.sectionTitle, { color: theme.text }]}>Timer</Text>
 
-          {/* Speech */}
-          <View style={styles.row}>
-            <View style={styles.timerLabelGroup}>
-              <Text style={[styles.rowLabel, { color: theme.text }]}>🔊 Pulsante pronuncia</Text>
-              <Text style={[styles.rowSub, { color: theme.textMuted }]}>Legge la sillaba ad alta voce</Text>
-            </View>
-            <Switch
-              value={config.speech ?? false}
-              onValueChange={(val) => setConfig((c) => ({ ...c, speech: val }))}
-              trackColor={{ true: COLORS.accent, false: theme.border }}
-              thumbColor={COLORS.white}
-            />
-          </View>
-
           {/* Syllable timer */}
           <View style={styles.row}>
             <View style={styles.timerLabelGroup}>
@@ -144,7 +131,18 @@ export default function Config() {
             </View>
             <Switch
               value={config.syllableTimer !== null}
-              onValueChange={(val) => setConfig((c) => ({ ...c, syllableTimer: val ? 5 : null }))}
+              onValueChange={(val) =>
+                setConfig((c) => {
+                  const newSt = val ? 5 : null;
+                  const newHt =
+                    newSt !== null && c.hideTimer !== null && c.hideTimer >= newSt
+                      ? newSt - 1 >= 1
+                        ? newSt - 1
+                        : null
+                      : c.hideTimer;
+                  return { ...c, syllableTimer: newSt, hideTimer: newHt };
+                })
+              }
               trackColor={{ true: COLORS.accent, false: theme.border }}
               thumbColor={COLORS.white}
             />
@@ -154,10 +152,12 @@ export default function Config() {
               <Pressable
                 style={[styles.counterBtn, config.syllableTimer <= 1 && styles.counterBtnDisabled]}
                 onPress={() =>
-                  setConfig((c) => ({
-                    ...c,
-                    syllableTimer: clamp((c.syllableTimer ?? 5) - 1, 1, 30),
-                  }))
+                  setConfig((c) => {
+                    const newSt = clamp((c.syllableTimer ?? 5) - 1, 1, 30);
+                    const newHt =
+                      c.hideTimer !== null && c.hideTimer >= newSt ? (newSt - 1 >= 1 ? newSt - 1 : null) : c.hideTimer;
+                    return { ...c, syllableTimer: newSt, hideTimer: newHt };
+                  })
                 }
                 disabled={config.syllableTimer <= 1}
               >
@@ -290,6 +290,72 @@ export default function Config() {
               />
             </View>
           ))}
+        </View>
+
+        {/* Pronuncia */}
+        <View style={[styles.section, { backgroundColor: theme.surface2 }]}>
+          <Text style={[styles.sectionTitle, { color: theme.text }]}>Pronuncia</Text>
+          <View style={styles.row}>
+            <View style={styles.timerLabelGroup}>
+              <Text style={[styles.rowLabel, { color: theme.text }]}>Pulsante pronuncia</Text>
+              <Text style={[styles.rowSub, { color: theme.textMuted }]}>Legge la sillaba ad alta voce</Text>
+            </View>
+            <Switch
+              value={config.speech ?? false}
+              onValueChange={(val) => setConfig((c) => ({ ...c, speech: val }))}
+              trackColor={{ true: COLORS.bg5, false: theme.border }}
+              thumbColor={COLORS.white}
+            />
+          </View>
+        </View>
+
+        {/* Memoria */}
+        <View style={[styles.section, { backgroundColor: theme.surface2 }]}>
+          <Text style={[styles.sectionTitle, { color: theme.text }]}>Memoria</Text>
+          <View style={styles.row}>
+            <View style={styles.timerLabelGroup}>
+              <Text style={[styles.rowLabel, { color: theme.text }]}>Nascondi parola (in secondi)</Text>
+              <Text style={[styles.rowSub, { color: theme.textMuted }]}>La parola diventa ??? dopo N secondi</Text>
+            </View>
+            <Switch
+              value={config.hideTimer !== null}
+              onValueChange={(val) => {
+                if (val) {
+                  const maxHide = config.syllableTimer !== null ? config.syllableTimer - 1 : 10;
+                  const defaultHide = Math.min(1, maxHide);
+                  if (defaultHide < 1) return;
+                  setConfig((c) => ({ ...c, hideTimer: defaultHide }));
+                } else {
+                  setConfig((c) => ({ ...c, hideTimer: null }));
+                }
+              }}
+              trackColor={{ true: COLORS.bg8, false: theme.border }}
+              thumbColor={COLORS.white}
+            />
+          </View>
+          {config.hideTimer !== null &&
+            (() => {
+              const maxHide = config.syllableTimer !== null ? config.syllableTimer - 1 : 10;
+              return (
+                <View style={styles.counter}>
+                  <Pressable
+                    style={[styles.counterBtn, config.hideTimer <= 1 && styles.counterBtnDisabled]}
+                    onPress={() => setConfig((c) => ({ ...c, hideTimer: clamp((c.hideTimer ?? 3) - 1, 1, maxHide) }))}
+                    disabled={config.hideTimer <= 1}
+                  >
+                    <Text style={styles.counterBtnText}>−</Text>
+                  </Pressable>
+                  <Text style={[styles.counterValue, { color: theme.text }]}>{config.hideTimer}s</Text>
+                  <Pressable
+                    style={[styles.counterBtn, config.hideTimer >= maxHide && styles.counterBtnDisabled]}
+                    onPress={() => setConfig((c) => ({ ...c, hideTimer: clamp((c.hideTimer ?? 3) + 1, 1, maxHide) }))}
+                    disabled={config.hideTimer >= maxHide}
+                  >
+                    <Text style={styles.counterBtnText}>+</Text>
+                  </Pressable>
+                </View>
+              );
+            })()}
         </View>
       </ScrollView>
 
