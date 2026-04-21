@@ -33,11 +33,21 @@ export default function ProfileSelection() {
     <Modal visible={aboutVisible} transparent animationType="fade" onRequestClose={() => setAboutVisible(false)}>
       <Pressable style={styles.overlay} onPress={() => setAboutVisible(false)}>
         <Pressable style={[styles.modalCard, { backgroundColor: theme.surface }]} onPress={() => {}}>
-          <Text style={[styles.modalDedication, { color: theme.textMuted }]}>{"Dedicato a Dodi e Nene.\nCon amore\npapà"}</Text>
+          {/* App name */}
+          <Text style={[styles.modalAppName, { color: theme.text }]}>diceche</Text>
+
           <View style={[styles.modalDivider, { backgroundColor: theme.border }]} />
+
+          {/* Dedica */}
+          <Text style={[styles.modalDedication, { color: theme.textMuted }]}>{"Dedicato a Dodi e Nene.\nCon amore, papà"}</Text>
+
+          <View style={[styles.modalDivider, { backgroundColor: theme.border }]} />
+
           {/* Dark mode toggle */}
           <View style={styles.themeRow}>
-            <Text style={[styles.themeLabel, { color: theme.text }]}>{theme.isDark ? "🌙 Tema scuro" : "☀️ Tema chiaro"}</Text>
+            <Text style={[styles.themeLabel, { color: theme.text }]}>
+              {theme.isDark ? "\uD83C\uDF19 Tema scuro" : "\u2600\uFE0F Tema chiaro"}
+            </Text>
             <Switch
               value={theme.isDark}
               onValueChange={(val) => setOverride(val ? "dark" : "light")}
@@ -50,8 +60,14 @@ export default function ProfileSelection() {
               <Text style={[styles.themeReset, { color: theme.textMuted }]}>Usa tema di sistema</Text>
             </Pressable>
           )}
+
           <View style={[styles.modalDivider, { backgroundColor: theme.border }]} />
-          <Text style={[styles.modalVersion, { color: theme.textMuted }]}>v{version}</Text>
+
+          {/* Footer: copyright + version */}
+          <Text style={[styles.modalFooter, { color: theme.textMuted }]}>
+            {`\u00A9 ${new Date().getFullYear()} Mattia Malonni \u00B7 v${version}`}
+          </Text>
+
           <Pressable style={[styles.modalClose, { backgroundColor: theme.surface2 }]} onPress={() => setAboutVisible(false)}>
             <Text style={[styles.modalCloseText, { color: theme.textMuted }]}>Chiudi</Text>
           </Pressable>
@@ -197,10 +213,14 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.2,
     shadowRadius: 12,
   },
+  modalAppName: {
+    fontSize: 26,
+    fontWeight: "900",
+    letterSpacing: 1,
+  },
   modalDedication: {
     fontSize: 14,
     fontWeight: "400",
-    color: COLORS.muted,
     textAlign: "center",
     lineHeight: 22,
     fontStyle: "italic",
@@ -225,9 +245,8 @@ const styles = StyleSheet.create({
     textDecorationLine: "underline",
     marginTop: -8,
   },
-  modalVersion: {
-    fontSize: 13,
-    color: COLORS.muted,
+  modalFooter: {
+    fontSize: 12,
     fontWeight: "500",
   },
   modalClose: {
@@ -239,7 +258,6 @@ const styles = StyleSheet.create({
   modalCloseText: {
     fontSize: 15,
     fontWeight: "700",
-    color: COLORS.muted,
   },
   title: {
     fontSize: 36,
