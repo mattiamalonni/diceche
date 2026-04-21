@@ -220,7 +220,7 @@ export default function Game() {
         {countdown === null && (
           <View style={styles.progressRow}>
             <Text style={styles.progressText}>
-              {currentIndex + 1} / {items.length}
+              {Math.min(currentIndex + 1, items.length)} / {items.length}
             </Text>
             {roundTimerSeconds !== null && roundSecondsLeft !== null && (
               <Text style={[styles.progressText, roundSecondsLeft <= 30 && styles.progressTextWarning]}>

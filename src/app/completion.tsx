@@ -20,7 +20,10 @@ function ConfettiPiece({ delay, x, color }: { delay: number; x: number; color: s
   const opacity = useSharedValue(0);
 
   useEffect(() => {
-    opacity.value = withDelay(delay, withTiming(1, { duration: 200 }));
+    opacity.value = withDelay(
+      delay,
+      withSequence(withTiming(1, { duration: 200 }), withDelay(1200, withTiming(0, { duration: 400 }))),
+    );
     y.value = withDelay(delay, withTiming(700, { duration: 1800, easing: Easing.out(Easing.quad) }));
     rotate.value = withDelay(delay, withRepeat(withTiming(360, { duration: 600 }), -1));
   }, []);
