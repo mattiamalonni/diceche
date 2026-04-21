@@ -275,7 +275,7 @@ export default function Config() {
           <Text style={[styles.sectionTitle, { color: theme.text }]}>Memoria</Text>
           <View style={styles.row}>
             <View style={styles.timerLabelGroup}>
-              <Text style={[styles.rowLabel, { color: theme.text }]}>Nascondi parola (in secondi)</Text>
+              <Text style={[styles.rowLabel, { color: theme.text }]}>Nascondi parola</Text>
               <Text style={[styles.rowSub, { color: theme.textMuted }]}>La parola diventa ??? dopo N secondi</Text>
             </View>
             <Switch
