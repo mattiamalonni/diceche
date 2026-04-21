@@ -1,40 +1,34 @@
 import { AVATARS, COLORS, PROFILE_COLORS } from "@/constants/colors";
 import { useProfiles } from "@/contexts/ProfileContext";
-import { useRouter } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import { useState } from "react";
-import {
-  KeyboardAvoidingView,
-  Platform,
-  Pressable,
-  SafeAreaView,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TextInput,
-  View,
-} from "react-native";
+import { KeyboardAvoidingView, Platform, Pressable, SafeAreaView, ScrollView, StyleSheet, Text, TextInput } from "react-native";
 
-function randomItem<T>(arr: readonly T[]): T {
-  return arr[Math.floor(Math.random() * arr.length)];
-}
-
-export default function AddProfile() {
-  const { addProfile, setActiveProfile } = useProfiles();
+export default function EditProfile() {
+  const { id } = useLocalSearchParams<{ id: string }>();
+  const { profiles, updateProfile } = useProfiles();
   const router = useRouter();
-  const [name, setName] = useState("");
+
+  const profile = profiles.find((p) => p.id === id);
+
+  const [name, setName] = useState(profile?.name ?? "");
+  const [avatar, setAvatar] = useState(profile?.avatar ?? AVATARS[0]);
+  const [color, setColor] = useState(profile?.color ?? PROFILE_COLORS[0]);
   const [isLoading, setIsLoading] = useState(false);
-  const [avatar, setAvatar] = useState<string>(() => randomItem(AVATARS));
-  const [color, setColor] = useState<string>(() => randomItem(PROFILE_COLORS));
+
+  if (!profile) {
+    router.replace("/");
+    return null;
+  }
 
   const canSubmit = name.trim().length > 0 && !isLoading;
 
-  const handleAdd = async () => {
+  const handleSave = async () => {
     if (!canSubmit) return;
     setIsLoading(true);
-    const profile = await addProfile(name.trim(), avatar, color);
-    setActiveProfile(profile);
+    await updateProfile(id, name.trim(), avatar, color);
     setIsLoading(false);
-    router.replace("/home");
+    router.back();
   };
 
   return (
@@ -50,27 +44,26 @@ export default function AddProfile() {
           showsVerticalScrollIndicator={false}
         >
           {/* Preview */}
-          <View style={[styles.preview, { backgroundColor: color }]}>
+          <Pressable style={[styles.preview, { backgroundColor: color }]} onPress={() => {}}>
             <Text style={styles.previewEmoji}>{avatar}</Text>
-          </View>
+          </Pressable>
 
           {/* Name */}
-          <Text style={styles.label}>Come ti chiami?</Text>
+          <Text style={styles.label}>Nome</Text>
           <TextInput
             style={styles.input}
             value={name}
             onChangeText={setName}
             placeholder="Nome del bambino"
             placeholderTextColor={COLORS.muted}
-            autoFocus
             returnKeyType="done"
-            onSubmitEditing={handleAdd}
+            onSubmitEditing={handleSave}
             maxLength={20}
           />
 
           {/* Avatar picker */}
-          <Text style={styles.label}>Scegli il tuo avatar</Text>
-          <View style={styles.avatarGrid}>
+          <Text style={styles.label}>Avatar</Text>
+          <Pressable style={[styles.avatarGrid, { pointerEvents: "box-none" } as any]}>
             {AVATARS.map((emoji) => (
               <Pressable
                 key={emoji}
@@ -85,11 +78,11 @@ export default function AddProfile() {
                 <Text style={styles.avatarEmoji}>{emoji}</Text>
               </Pressable>
             ))}
-          </View>
+          </Pressable>
 
           {/* Color picker */}
-          <Text style={styles.label}>Scegli il tuo colore</Text>
-          <View style={styles.colorRow}>
+          <Text style={styles.label}>Colore</Text>
+          <Pressable style={styles.colorRow} onPress={() => {}}>
             {PROFILE_COLORS.map((c) => (
               <Pressable
                 key={c}
@@ -99,11 +92,11 @@ export default function AddProfile() {
                 {color === c && <Text style={styles.colorCheck}>✓</Text>}
               </Pressable>
             ))}
-          </View>
+          </Pressable>
 
-          {/* Submit */}
-          <Pressable style={[styles.button, !canSubmit && styles.buttonDisabled]} onPress={handleAdd} disabled={!canSubmit}>
-            <Text style={styles.buttonText}>Inizia!</Text>
+          {/* Save */}
+          <Pressable style={[styles.button, !canSubmit && styles.buttonDisabled]} onPress={handleSave} disabled={!canSubmit}>
+            <Text style={styles.buttonText}>Salva</Text>
           </Pressable>
         </ScrollView>
       </KeyboardAvoidingView>

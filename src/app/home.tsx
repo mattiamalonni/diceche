@@ -13,7 +13,7 @@ export default function Home() {
   }
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={[styles.container, { backgroundColor: activeProfile.color ?? COLORS.bg2 }]}>
       <View style={styles.header}>
         <Pressable onPress={() => router.replace("/")}>
           <Text style={styles.changeText}>Cambia</Text>
@@ -22,14 +22,14 @@ export default function Home() {
 
       <View style={styles.content}>
         <View style={styles.avatarCircle}>
-          <Text style={styles.avatarLetter}>{activeProfile.name.charAt(0).toUpperCase()}</Text>
+          <Text style={styles.avatarEmoji}>{activeProfile.avatar ?? activeProfile.name.charAt(0).toUpperCase()}</Text>
         </View>
         <Text style={styles.greeting}>Ciao,</Text>
         <Text style={styles.name}>{activeProfile.name}!</Text>
       </View>
 
       <Pressable style={styles.playButton} onPress={() => router.push("/config")}>
-        <Text style={styles.playButtonText}>▶ Gioca</Text>
+        <Text style={[styles.playButtonText, { color: activeProfile.color ?? COLORS.bg2 }]}>▶ Gioca</Text>
       </Pressable>
     </SafeAreaView>
   );
@@ -71,10 +71,8 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.15,
     shadowRadius: 8,
   },
-  avatarLetter: {
-    fontSize: 48,
-    fontWeight: "800",
-    color: COLORS.bg2,
+  avatarEmoji: {
+    fontSize: 52,
   },
   greeting: {
     fontSize: 28,

@@ -87,16 +87,17 @@ export default function ProfileSelection() {
           {profiles.map((profile) => (
             <Pressable
               key={profile.id}
-              style={styles.profileCard}
+              style={[styles.profileCard, { backgroundColor: profile.color ?? COLORS.bg4 }]}
               onPress={() => {
-                if (isEditMode) return;
+                if (isEditMode) {
+                  router.push({ pathname: "/edit-profile", params: { id: profile.id } });
+                  return;
+                }
                 setActiveProfile(profile);
                 router.replace("/home");
               }}
             >
-              <View style={styles.avatar}>
-                <Text style={styles.avatarText}>{profile.name.charAt(0).toUpperCase()}</Text>
-              </View>
+              <Text style={styles.profileEmoji}>{profile.avatar ?? profile.name.charAt(0).toUpperCase()}</Text>
               <Text style={styles.profileName}>{profile.name}</Text>
               {isEditMode && (
                 <Pressable style={styles.deleteBadge} onPress={() => handleDeleteProfile(profile.id, profile.name)} hitSlop={8}>
@@ -230,7 +231,6 @@ const styles = StyleSheet.create({
   profileCard: {
     width: 140,
     height: 160,
-    backgroundColor: COLORS.bg4,
     borderRadius: 24,
     alignItems: "center",
     justifyContent: "center",
@@ -241,18 +241,8 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.12,
     shadowRadius: 6,
   },
-  avatar: {
-    width: 70,
-    height: 70,
-    borderRadius: 35,
-    backgroundColor: COLORS.white,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  avatarText: {
-    fontSize: 32,
-    fontWeight: "800",
-    color: COLORS.dark,
+  profileEmoji: {
+    fontSize: 52,
   },
   profileName: {
     fontSize: 16,

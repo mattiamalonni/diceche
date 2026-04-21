@@ -5,6 +5,8 @@ import React, { createContext, useCallback, useContext, useEffect, useState } fr
 export interface Profile {
   id: string;
   name: string;
+  avatar: string;
+  color: string;
   config: RoundConfig;
 }
 
@@ -12,7 +14,8 @@ interface ProfileContextValue {
   profiles: Profile[];
   activeProfile: Profile | null;
   setActiveProfile: (profile: Profile) => void;
-  addProfile: (name: string) => Promise<Profile>;
+  addProfile: (name: string, avatar: string, color: string) => Promise<Profile>;
+  updateProfile: (id: string, name: string, avatar: string, color: string) => Promise<void>;
   deleteProfile: (id: string) => Promise<void>;
   updateProfileConfig: (id: string, config: RoundConfig) => Promise<void>;
   isLoaded: boolean;
@@ -44,10 +47,12 @@ export function ProfileProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const addProfile = useCallback(
-    async (name: string): Promise<Profile> => {
+    async (name: string, avatar: string, color: string): Promise<Profile> => {
       const profile: Profile = {
         id: Date.now().toString(),
         name: name.trim(),
+        avatar,
+        color,
         config: { ...DEFAULT_CONFIG },
       };
       const updated = [...profiles, profile];
@@ -55,6 +60,17 @@ export function ProfileProvider({ children }: { children: React.ReactNode }) {
       return profile;
     },
     [profiles, persist],
+  );
+
+  const updateProfile = useCallback(
+    async (id: string, name: string, avatar: string, color: string) => {
+      const updated = profiles.map((p) => (p.id === id ? { ...p, name: name.trim(), avatar, color } : p));
+      await persist(updated);
+      if (activeProfile?.id === id) {
+        setActiveProfileState((prev) => (prev ? { ...prev, name: name.trim(), avatar, color } : prev));
+      }
+    },
+    [profiles, activeProfile, persist],
   );
 
   const updateProfileConfig = useCallback(
@@ -88,6 +104,7 @@ export function ProfileProvider({ children }: { children: React.ReactNode }) {
         activeProfile,
         setActiveProfile,
         addProfile,
+        updateProfile,
         deleteProfile,
         updateProfileConfig,
         isLoaded,

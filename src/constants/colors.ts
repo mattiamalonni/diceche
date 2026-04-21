@@ -38,3 +38,24 @@ export const BG_PALETTE = [
 export function getBgColor(index: number): string {
   return BG_PALETTE[index % BG_PALETTE.length];
 }
+
+export const PROFILE_COLORS = [
+  "#FF6B6B", // coral red
+  "#FF8E53", // orange
+  "#FFD93D", // yellow
+  "#6BCB77", // green
+  "#4ECDC4", // teal
+  "#45B7D1", // sky blue
+  "#4D96FF", // blue
+  "#A29BFE", // lavender
+  "#C77DFF", // violet
+  "#FF69B4", // pink
+  "#FD79A8", // rose
+  "#00CEC9", // cyan
+  "#55EFC4", // mint
+  "#FDCB6E", // amber
+  "#E17055", // terracotta
+  "#636E72", // slate
+] as const;
+
+export const AVATARS = ["🦊", "🐼", "🦋", "🚀", "⭐", "🎮", "🌈", "🦄", "🐸", "🐯", "🦁", "🐧", "🎨", "🎵", "🏆", "🌙"] as const;
