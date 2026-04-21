@@ -65,9 +65,13 @@ function Confetti() {
 }
 
 export default function Completion() {
-  const { activeProfile } = useProfiles();
+  const { activeProfile, incrementGamesPlayed } = useProfiles();
   const { restartRound, correctCount, items } = useGame();
   const router = useRouter();
+
+  useEffect(() => {
+    if (activeProfile) incrementGamesPlayed(activeProfile.id);
+  }, []);
 
   const scale = useSharedValue(0.5);
   const opacity = useSharedValue(0);

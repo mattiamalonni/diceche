@@ -8,6 +8,7 @@ export interface Profile {
   avatar: string;
   color: string;
   config: RoundConfig;
+  gamesPlayed?: number;
 }
 
 interface ProfileContextValue {
@@ -18,6 +19,7 @@ interface ProfileContextValue {
   updateProfile: (id: string, name: string, avatar: string, color: string) => Promise<void>;
   deleteProfile: (id: string) => Promise<void>;
   updateProfileConfig: (id: string, config: RoundConfig) => Promise<void>;
+  incrementGamesPlayed: (id: string) => Promise<void>;
   isLoaded: boolean;
 }
 
@@ -93,6 +95,15 @@ export function ProfileProvider({ children }: { children: React.ReactNode }) {
     [profiles, persist],
   );
 
+  const incrementGamesPlayed = useCallback(
+    async (id: string) => {
+      const updated = profiles.map((p) => (p.id === id ? { ...p, gamesPlayed: (p.gamesPlayed ?? 0) + 1 } : p));
+      await persist(updated);
+      setActiveProfileState((prev) => (prev?.id === id ? { ...prev, gamesPlayed: (prev.gamesPlayed ?? 0) + 1 } : prev));
+    },
+    [profiles, persist],
+  );
+
   const setActiveProfile = useCallback((profile: Profile) => {
     setActiveProfileState(profile);
   }, []);
@@ -107,6 +118,7 @@ export function ProfileProvider({ children }: { children: React.ReactNode }) {
         updateProfile,
         deleteProfile,
         updateProfileConfig,
+        incrementGamesPlayed,
         isLoaded,
       }}
     >

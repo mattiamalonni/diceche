@@ -146,6 +146,7 @@ export default function ProfileSelection() {
               <Text style={styles.profileName} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.6}>
                 {profile.name}
               </Text>
+              <Text style={styles.profileGames}>{profile.gamesPlayed ?? 0} partite</Text>
               {isEditMode && (
                 <Pressable style={styles.deleteBadge} onPress={() => handleDeleteProfile(profile.id, profile.name)} hitSlop={8}>
                   <Ionicons name="close" size={14} color={COLORS.white} />
@@ -279,7 +280,7 @@ const styles = StyleSheet.create({
     borderRadius: 24,
     alignItems: "center",
     justifyContent: "center",
-    gap: 12,
+    gap: 8,
     elevation: 4,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
@@ -294,6 +295,13 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     color: COLORS.white,
     width: "100%",
+    textAlign: "center",
+  },
+  profileGames: {
+    fontSize: 12,
+    fontWeight: "600",
+    color: COLORS.white,
+    opacity: 0.75,
     textAlign: "center",
   },
   addCard: {
