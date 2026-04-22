@@ -19,7 +19,7 @@ export default function Home() {
   const handleQuickPlay = () => {
     const cfg = lastConfig ?? activeProfile.config;
     startRound(cfg);
-    router.push("/game");
+    router.push("/countdown");
   };
 
   return (

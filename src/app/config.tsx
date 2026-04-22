@@ -79,7 +79,7 @@ export default function Config() {
     const finalConfig = { ...config, dictionary: pendingDictionary, count: cappedCount };
     await updateProfileConfig(activeProfile.id, finalConfig);
     startRound(finalConfig);
-    router.replace("/game");
+    router.replace("/countdown");
   };
 
   return (

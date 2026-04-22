@@ -91,7 +91,7 @@ export default function Completion() {
 
   const handlePlayAgain = () => {
     restartRound();
-    router.replace("/game");
+    router.replace("/countdown");
   };
 
   return (

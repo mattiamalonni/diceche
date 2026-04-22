@@ -1,6 +1,7 @@
 import { COLORS, getBgColor } from "@/constants/colors";
 import { useGame } from "@/contexts/GameContext";
 import { Ionicons } from "@expo/vector-icons";
+import { useAudioPlayer } from "expo-audio";
 import * as Haptics from "expo-haptics";
 import { Stack, useRouter } from "expo-router";
 import * as Speech from "expo-speech";
@@ -18,6 +19,8 @@ import Animated, {
 } from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+const startSound = require("../../assets/sounds/start.mp3");
+
 export default function Game() {
   const { items, currentIndex, markCorrect, markWrong, isFinished, config, finishRound } = useGame();
   const router = useRouter();
@@ -32,17 +35,16 @@ export default function Game() {
   const flashColor = useSharedValue(0); // 0 = normal, 1 = red flash
   const syllableProgress = useSharedValue(1); // 1 = full bar, 0 = empty
   const barWidthShared = useSharedValue(0);
-  const countdownScale = useSharedValue(1.5);
   const wordTextOpacity = useSharedValue(1); // 1 = word visible, 0 = ??? visible
 
-  const [countdown, setCountdown] = useState<number | null>(3);
-  const countdownRef = useRef<number | null>(3);
   const [roundSecondsLeft, setRoundSecondsLeft] = useState<number | null>(roundTimerSeconds);
   const roundIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const roundSecondsLeftRef = useRef<number | null>(roundTimerSeconds);
   const isTransitioningRef = useRef(false);
   const hideTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const bestVoiceRef = useRef<string | undefined>(undefined);
+
+  const startPlayer = useAudioPlayer(startSound);
 
   // Pick best available Italian voice once on mount
   useEffect(() => {
@@ -60,29 +62,15 @@ export default function Game() {
     }
   }, [isFinished]);
 
-  // Countdown: decrement 3 → 2 → 1 → null
+  // Suono di inizio partita
   useEffect(() => {
-    if (countdown === null) return;
-    const t = setTimeout(() => {
-      setCountdown((c) => {
-        const next = c !== null && c > 1 ? c - 1 : null;
-        countdownRef.current = next;
-        return next;
-      });
-    }, 1000);
-    return () => clearTimeout(t);
-  }, [countdown]);
+    startPlayer.seekTo(0);
+    startPlayer.play();
+  }, []);
 
-  // Animate each countdown number
+  // Timer partita
   useEffect(() => {
-    if (countdown === null) return;
-    countdownScale.value = 1.5;
-    countdownScale.value = withSpring(1, { damping: 10, stiffness: 120 });
-  }, [countdown]);
-
-  // Timer partita: inizia dopo la fine del conto alla rovescia
-  useEffect(() => {
-    if (!roundTimerSeconds || countdown !== null) return;
+    if (!roundTimerSeconds) return;
     const endTime = Date.now() + roundTimerSeconds * 1000;
     roundIntervalRef.current = setInterval(() => {
       const remaining = Math.ceil((endTime - Date.now()) / 1000);
@@ -98,7 +86,7 @@ export default function Game() {
     return () => {
       if (roundIntervalRef.current) clearInterval(roundIntervalRef.current);
     };
-  }, [countdown]);
+  }, []);
 
   // Scadenza timer partita: la sillaba corrente conta come sbagliata, termina la partita
   useEffect(() => {
@@ -135,9 +123,9 @@ export default function Game() {
     });
   };
 
-  // Syllable timer: reset and start on each new card (only after countdown)
+  // Syllable timer: reset and start on each new card
   useEffect(() => {
-    if (!syllableTimerSeconds || isFinished || countdown !== null) return;
+    if (!syllableTimerSeconds || isFinished) return;
     syllableProgress.value = 1;
     syllableProgress.value = withTiming(0, { duration: syllableTimerSeconds * 1000 }, (finished) => {
       if (finished) runOnJS(animateAndAdvance)(markWrong);
@@ -145,11 +133,11 @@ export default function Game() {
     return () => {
       cancelAnimation(syllableProgress);
     };
-  }, [currentIndex, countdown]);
+  }, [currentIndex]);
 
   // Hide timer: hide word (show ???) after N seconds on each new card
   useEffect(() => {
-    if (!hideTimerSeconds || isFinished || countdown !== null) return;
+    if (!hideTimerSeconds || isFinished) return;
     wordTextOpacity.value = 1;
     if (hideTimerRef.current) clearTimeout(hideTimerRef.current);
     hideTimerRef.current = setTimeout(() => {
@@ -158,7 +146,7 @@ export default function Game() {
     return () => {
       if (hideTimerRef.current) clearTimeout(hideTimerRef.current);
     };
-  }, [currentIndex, countdown]);
+  }, [currentIndex]);
 
   const handleCorrect = () => {
     if (isTransitioningRef.current) return;
@@ -198,7 +186,6 @@ export default function Game() {
     }
 
     const resumeTimers = () => {
-      if (countdownRef.current !== null) return;
       // Resume syllable timer from frozen progress value
       if (syllableTimerSeconds && !isFinished) {
         const remainingMs = syllableProgress.value * syllableTimerSeconds * 1000;
@@ -248,10 +235,6 @@ export default function Game() {
     ]);
   };
 
-  const countdownStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: countdownScale.value }],
-  }));
-
   const syllableStyle = useAnimatedStyle(() => ({
     transform: [{ translateX: translateX.value }],
     opacity: opacity.value,
@@ -293,104 +276,87 @@ export default function Game() {
           <Pressable style={styles.exitBtn} onPress={handleExit} hitSlop={8}>
             <Ionicons name="close" size={18} color="rgba(255,255,255,0.9)" />
           </Pressable>
-          {countdown === null && (
-            <View style={styles.progressRow}>
-              <Text style={styles.progressText}>
-                {Math.min(currentIndex + 1, items.length)} / {items.length}
-              </Text>
-              {roundTimerSeconds !== null && roundSecondsLeft !== null && (
-                <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
-                  <Ionicons
-                    name="time-outline"
-                    size={18}
-                    color={roundSecondsLeft <= 30 ? COLORS.danger : "rgba(255,255,255,0.85)"}
-                  />
-                  <Text style={[styles.progressText, roundSecondsLeft <= 30 && styles.progressTextWarning]}>
-                    {formatTime(roundSecondsLeft)}
-                  </Text>
-                </View>
-              )}
-            </View>
-          )}
-        </View>
-
-        {countdown !== null ? (
-          <View style={styles.center}>
-            <Animated.Text style={[styles.countdownNumber, countdownStyle]}>{countdown}</Animated.Text>
-            <Pressable
-              style={styles.skipBtn}
-              onPress={() => {
-                setCountdown(null);
-                countdownRef.current = null;
-              }}
-            >
-              <Text style={styles.skipBtnText}>Salta</Text>
-            </Pressable>
-          </View>
-        ) : (
-          <>
-            {/* Syllable timer bar */}
-            {syllableTimerSeconds !== null && (
-              <View
-                style={styles.timerBarContainer}
-                onLayout={(e) => {
-                  barWidthShared.value = e.nativeEvent.layout.width;
-                }}
-              >
-                <Animated.View style={[styles.timerBarFill, timerBarStyle]} />
+          <View style={styles.progressRow}>
+            <Text style={styles.progressText}>
+              {Math.min(currentIndex + 1, items.length)} / {items.length}
+            </Text>
+            {roundTimerSeconds !== null && roundSecondsLeft !== null && (
+              <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
+                <Ionicons
+                  name="time-outline"
+                  size={18}
+                  color={roundSecondsLeft <= 30 ? COLORS.danger : "rgba(255,255,255,0.85)"}
+                />
+                <Text style={[styles.progressText, roundSecondsLeft <= 30 && styles.progressTextWarning]}>
+                  {formatTime(roundSecondsLeft)}
+                </Text>
               </View>
             )}
+          </View>
+        </View>
 
-            {/* Syllable */}
-            <View style={styles.center}>
-              <View style={{ width: "100%" }}>
+        <>
+          {/* Syllable timer bar */}
+          {syllableTimerSeconds !== null && (
+            <View
+              style={styles.timerBarContainer}
+              onLayout={(e) => {
+                barWidthShared.value = e.nativeEvent.layout.width;
+              }}
+            >
+              <Animated.View style={[styles.timerBarFill, timerBarStyle]} />
+            </View>
+          )}
+
+          {/* Syllable */}
+          <View style={styles.center}>
+            <View style={{ width: "100%" }}>
+              <Animated.Text
+                style={[styles.syllable, syllableStyle, hideTimerSeconds !== null ? wordTextStyle : undefined]}
+                numberOfLines={1}
+                adjustsFontSizeToFit
+                minimumFontScale={0.3}
+              >
+                {displayCurrent}
+              </Animated.Text>
+              {hideTimerSeconds !== null && (
                 <Animated.Text
-                  style={[styles.syllable, syllableStyle, hideTimerSeconds !== null ? wordTextStyle : undefined]}
+                  style={[styles.syllable, syllableStyle, hiddenTextStyle, styles.syllableHidden]}
                   numberOfLines={1}
                   adjustsFontSizeToFit
                   minimumFontScale={0.3}
                 >
-                  {displayCurrent}
+                  ???
                 </Animated.Text>
-                {hideTimerSeconds !== null && (
-                  <Animated.Text
-                    style={[styles.syllable, syllableStyle, hiddenTextStyle, styles.syllableHidden]}
-                    numberOfLines={1}
-                    adjustsFontSizeToFit
-                    minimumFontScale={0.3}
-                  >
-                    ???
-                  </Animated.Text>
-                )}
-              </View>
-            </View>
-
-            {/* Buttons */}
-            <View style={styles.buttons}>
-              <Pressable
-                style={[styles.btn, styles.wrongBtn]}
-                onPress={handleWrong}
-                android_ripple={{ color: "rgba(255,255,255,0.3)" }}
-              >
-                <Ionicons name="close" size={28} color={COLORS.white} />
-                <Text style={styles.btnLabel}>Sbagliato</Text>
-              </Pressable>
-              {speechEnabled && (
-                <Pressable style={[styles.btn, styles.speechBtn]} onPress={handleSpeech}>
-                  <Ionicons name="volume-high" size={28} color={COLORS.white} />
-                </Pressable>
               )}
-              <Pressable
-                style={[styles.btn, styles.correctBtn]}
-                onPress={handleCorrect}
-                android_ripple={{ color: "rgba(255,255,255,0.3)" }}
-              >
-                <Ionicons name="checkmark" size={28} color={COLORS.white} />
-                <Text style={styles.btnLabel}>Giusto</Text>
-              </Pressable>
             </View>
-          </>
-        )}
+          </View>
+
+          {/* Buttons */}
+          <View style={styles.buttons}>
+            <Pressable
+              style={[styles.btn, styles.wrongBtn]}
+              onPress={handleWrong}
+              android_ripple={{ color: "rgba(255,255,255,0.3)" }}
+            >
+              <Ionicons name="close" size={28} color={COLORS.white} />
+              <Text style={styles.btnLabel}>Sbagliato</Text>
+            </Pressable>
+            {speechEnabled && (
+              <Pressable style={[styles.btn, styles.speechBtn]} onPress={handleSpeech}>
+                <Ionicons name="volume-high" size={28} color={COLORS.white} />
+              </Pressable>
+            )}
+            <Pressable
+              style={[styles.btn, styles.correctBtn]}
+              onPress={handleCorrect}
+              android_ripple={{ color: "rgba(255,255,255,0.3)" }}
+            >
+              <Ionicons name="checkmark" size={28} color={COLORS.white} />
+              <Text style={styles.btnLabel}>Giusto</Text>
+            </Pressable>
+          </View>
+        </>
       </SafeAreaView>
     </>
   );
@@ -459,26 +425,6 @@ const styles = StyleSheet.create({
   syllableHidden: {
     position: "absolute",
     top: 0,
-  },
-  countdownNumber: {
-    fontSize: 160,
-    fontWeight: "900",
-    color: "rgba(255,255,255,0.9)",
-    textShadowColor: "rgba(0,0,0,0.2)",
-    textShadowOffset: { width: 0, height: 6 },
-    textShadowRadius: 16,
-  },
-  skipBtn: {
-    marginTop: 24,
-    paddingHorizontal: 32,
-    paddingVertical: 12,
-    borderRadius: 24,
-    backgroundColor: "rgba(255,255,255,0.2)",
-  },
-  skipBtnText: {
-    fontSize: 18,
-    fontWeight: "700",
-    color: "rgba(255,255,255,0.85)",
   },
   buttons: {
     flexDirection: "row",
