@@ -1,5 +1,5 @@
 {
-  "name": "diceche",
+  "name": "com.mattiamalonni.diceche",
   "main": "expo-router/entry",
   "version": "1.0.0",
   "scripts": {
