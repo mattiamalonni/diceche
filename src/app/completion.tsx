@@ -1,6 +1,7 @@
 import { COLORS } from "@/constants/colors";
 import { useGame } from "@/contexts/GameContext";
 import { useProfiles } from "@/contexts/ProfileContext";
+import { useSoundContext } from "@/contexts/SoundContext";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { useEffect } from "react";
@@ -67,10 +68,12 @@ function Confetti() {
 export default function Completion() {
   const { activeProfile, incrementGamesPlayed } = useProfiles();
   const { restartRound, correctCount, items } = useGame();
+  const { playSound } = useSoundContext();
   const router = useRouter();
 
   useEffect(() => {
     if (activeProfile) incrementGamesPlayed(activeProfile.id);
+    playSound("completion");
   }, []);
 
   const scale = useSharedValue(0.5);

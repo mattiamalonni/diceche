@@ -9,7 +9,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 export default function Countdown() {
   const { items } = useGame();
   const router = useRouter();
-  const { play } = useSoundContext();
+  const { playSound } = useSoundContext();
 
   const [countdown, setCountdown] = useState<number | null>(3);
   const countdownScale = useSharedValue(1.5);
@@ -29,7 +29,7 @@ export default function Countdown() {
       router.replace("/game");
       return;
     }
-    play("beep");
+    playSound("beep");
     countdownScale.value = 1.5;
     countdownScale.value = withSpring(1, { damping: 10, stiffness: 120 });
   }, [countdown]);

@@ -22,7 +22,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 export default function Game() {
   const { items, currentIndex, markCorrect, markWrong, isFinished, config, finishRound } = useGame();
   const router = useRouter();
-  const { play } = useSoundContext();
+  const { playSound } = useSoundContext();
 
   const syllableTimerSeconds = config?.syllableTimer ?? null;
   const roundTimerSeconds = config?.roundTimer ?? null;
@@ -61,7 +61,7 @@ export default function Game() {
 
   // Suono di inizio partita
   useEffect(() => {
-    play("start");
+    playSound("start");
   }, []);
 
   // Timer partita
@@ -147,6 +147,7 @@ export default function Game() {
   const handleCorrect = () => {
     if (isTransitioningRef.current) return;
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    playSound("correct");
     cancelAnimation(syllableProgress);
     animateAndAdvance(markCorrect);
   };
@@ -155,6 +156,7 @@ export default function Game() {
     if (isTransitioningRef.current) return;
     isTransitioningRef.current = true;
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+    playSound("wrong");
     cancelAnimation(syllableProgress);
     flashColor.value = withSequence(
       withTiming(1, { duration: 80 }),

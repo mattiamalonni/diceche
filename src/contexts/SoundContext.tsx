@@ -6,7 +6,7 @@ import React, { createContext, useCallback, useContext, useEffect, useState } fr
 interface SoundContextValue {
   soundEnabled: boolean;
   setSoundEnabled: (enabled: boolean) => void;
-  play: (key: SoundKey) => void;
+  playSound: (key: SoundKey) => void;
 }
 
 const STORAGE_KEY = "diceche:soundEnabled";
@@ -31,7 +31,7 @@ export function SoundProvider({ children }: { children: React.ReactNode }) {
     AsyncStorage.setItem(STORAGE_KEY, String(enabled));
   }, []);
 
-  const play = useCallback(
+  const playSound = useCallback(
     (key: SoundKey) => {
       if (!soundEnabled) return;
       player.replace(SOUNDS[key]);
@@ -40,7 +40,7 @@ export function SoundProvider({ children }: { children: React.ReactNode }) {
     [soundEnabled, player],
   );
 
-  return <SoundContext.Provider value={{ soundEnabled, setSoundEnabled, play }}>{children}</SoundContext.Provider>;
+  return <SoundContext.Provider value={{ soundEnabled, setSoundEnabled, playSound }}>{children}</SoundContext.Provider>;
 }
 
 export function useSoundContext() {
