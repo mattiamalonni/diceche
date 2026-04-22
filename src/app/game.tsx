@@ -1,7 +1,7 @@
 import { COLORS, getBgColor } from "@/constants/colors";
 import { useGame } from "@/contexts/GameContext";
+import { useSoundContext } from "@/contexts/SoundContext";
 import { Ionicons } from "@expo/vector-icons";
-import { useAudioPlayer } from "expo-audio";
 import * as Haptics from "expo-haptics";
 import { Stack, useRouter } from "expo-router";
 import * as Speech from "expo-speech";
@@ -19,11 +19,10 @@ import Animated, {
 } from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-const startSound = require("../../assets/sounds/start.mp3");
-
 export default function Game() {
   const { items, currentIndex, markCorrect, markWrong, isFinished, config, finishRound } = useGame();
   const router = useRouter();
+  const { play } = useSoundContext();
 
   const syllableTimerSeconds = config?.syllableTimer ?? null;
   const roundTimerSeconds = config?.roundTimer ?? null;
@@ -44,8 +43,6 @@ export default function Game() {
   const hideTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const bestVoiceRef = useRef<string | undefined>(undefined);
 
-  const startPlayer = useAudioPlayer(startSound);
-
   // Pick best available Italian voice once on mount
   useEffect(() => {
     if (!speechEnabled) return;
@@ -64,8 +61,7 @@ export default function Game() {
 
   // Suono di inizio partita
   useEffect(() => {
-    startPlayer.seekTo(0);
-    startPlayer.play();
+    play("start");
   }, []);
 
   // Timer partita

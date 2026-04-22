@@ -1,9 +1,12 @@
+import { SOUNDS, SoundKey } from "@/utils/sounds";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useAudioPlayer } from "expo-audio";
 import React, { createContext, useCallback, useContext, useEffect, useState } from "react";
 
 interface SoundContextValue {
   soundEnabled: boolean;
   setSoundEnabled: (enabled: boolean) => void;
+  play: (key: SoundKey) => void;
 }
 
 const STORAGE_KEY = "diceche:soundEnabled";
@@ -12,6 +15,7 @@ const SoundContext = createContext<SoundContextValue | null>(null);
 
 export function SoundProvider({ children }: { children: React.ReactNode }) {
   const [soundEnabled, setSoundEnabledState] = useState(true);
+  const player = useAudioPlayer(null);
 
   // Load persisted value once on mount
   useEffect(() => {
@@ -27,7 +31,16 @@ export function SoundProvider({ children }: { children: React.ReactNode }) {
     AsyncStorage.setItem(STORAGE_KEY, String(enabled));
   }, []);
 
-  return <SoundContext.Provider value={{ soundEnabled, setSoundEnabled }}>{children}</SoundContext.Provider>;
+  const play = useCallback(
+    (key: SoundKey) => {
+      if (!soundEnabled) return;
+      player.replace(SOUNDS[key]);
+      player.play();
+    },
+    [soundEnabled, player],
+  );
+
+  return <SoundContext.Provider value={{ soundEnabled, setSoundEnabled, play }}>{children}</SoundContext.Provider>;
 }
 
 export function useSoundContext() {

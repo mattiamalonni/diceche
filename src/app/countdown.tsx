@@ -1,20 +1,18 @@
 import { useGame } from "@/contexts/GameContext";
-import { useAudioPlayer } from "expo-audio";
+import { useSoundContext } from "@/contexts/SoundContext";
 import { Stack, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { Pressable, StyleSheet, Text } from "react-native";
 import Animated, { useAnimatedStyle, useSharedValue, withSpring } from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-const beepSound = require("../../assets/sounds/beep.mp3");
-
 export default function Countdown() {
   const { items } = useGame();
   const router = useRouter();
+  const { play } = useSoundContext();
 
   const [countdown, setCountdown] = useState<number | null>(3);
   const countdownScale = useSharedValue(1.5);
-  const player = useAudioPlayer(beepSound);
 
   // Decrement 3 → 2 → 1 → null
   useEffect(() => {
@@ -31,8 +29,7 @@ export default function Countdown() {
       router.replace("/game");
       return;
     }
-    player.seekTo(0);
-    player.play();
+    play("beep");
     countdownScale.value = 1.5;
     countdownScale.value = withSpring(1, { damping: 10, stiffness: 120 });
   }, [countdown]);
