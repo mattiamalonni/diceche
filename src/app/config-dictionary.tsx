@@ -66,10 +66,11 @@ export default function ConfigDictionary() {
             {vowels.length} vocali, {consonants.length} consonanti → {combinationsCount} sillabe + {singleLettersCount} lettere
             singole
           </Text>
-          <Pressable style={styles.row} onPress={() => router.push("/config-base-letters")}>
+          <Pressable style={[styles.row, styles.pressableRow]} onPress={() => router.push("/config-base-letters")}>
             <Text style={[styles.rowLabel, { color: theme.text }]}>Vocali e consonanti</Text>
             <Ionicons name="chevron-forward" size={18} color={theme.textMuted} />
           </Pressable>
+          <View style={[styles.divider, { backgroundColor: theme.border }]} />
           <View style={styles.row}>
             <Text style={[styles.rowLabel, { color: theme.text }]}>Includi sillabe</Text>
             <Switch
@@ -189,6 +190,10 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
+  },
+  pressableRow: {
+    minHeight: 44,
+    paddingVertical: 4,
   },
   rowLabel: {
     fontSize: 15,
