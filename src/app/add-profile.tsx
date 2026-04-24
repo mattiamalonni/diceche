@@ -34,9 +34,14 @@ export default function AddProfile() {
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: theme.surface }]}>
       <KeyboardAvoidingView style={styles.flex} behavior={Platform.OS === "ios" ? "padding" : undefined}>
-        <Pressable style={styles.back} onPress={() => router.back()}>
-          <Ionicons name="chevron-back" size={20} color={COLORS.primary} />
-        </Pressable>
+        <View style={styles.header}>
+          <Pressable style={styles.back} onPress={() => router.back()}>
+            <Ionicons name="chevron-back" size={20} color={COLORS.primary} />
+          </Pressable>
+          <Pressable style={styles.headerSaveBtn} onPress={handleAdd} disabled={!canSubmit}>
+            <Text style={[styles.headerSaveText, { color: canSubmit ? COLORS.primary : theme.textMuted }]}>Inizia!</Text>
+          </Pressable>
+        </View>
 
         <ScrollView
           contentContainerStyle={styles.scroll}
@@ -94,11 +99,6 @@ export default function AddProfile() {
               </Pressable>
             ))}
           </View>
-
-          {/* Submit */}
-          <Pressable style={[styles.button, !canSubmit && styles.buttonDisabled]} onPress={handleAdd} disabled={!canSubmit}>
-            <Text style={styles.buttonText}>Inizia!</Text>
-          </Pressable>
         </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>
@@ -112,10 +112,22 @@ const styles = StyleSheet.create({
   flex: {
     flex: 1,
   },
+  header: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
   back: {
-    alignSelf: "flex-start",
     paddingHorizontal: 24,
     paddingVertical: 12,
+  },
+  headerSaveBtn: {
+    paddingHorizontal: 24,
+    paddingVertical: 12,
+  },
+  headerSaveText: {
+    fontSize: 17,
+    fontWeight: "800",
   },
   scroll: {
     padding: 24,
@@ -199,23 +211,5 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 4,
-  },
-
-  button: {
-    backgroundColor: COLORS.primary,
-    paddingVertical: 16,
-    paddingHorizontal: 48,
-    borderRadius: 32,
-    marginTop: 8,
-    width: "100%",
-    alignItems: "center",
-  },
-  buttonDisabled: {
-    backgroundColor: COLORS.disabled,
-  },
-  buttonText: {
-    fontSize: 20,
-    fontWeight: "800",
-    color: COLORS.white,
   },
 });
