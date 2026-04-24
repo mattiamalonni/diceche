@@ -38,6 +38,16 @@ export default function ConfigDictionary() {
     setPendingDictionary({ ...pendingDictionary, packs });
   };
 
+  const toggleAllSpecials = () => {
+    const allSelected = pendingDictionary.specials.length === ALL_SPECIALS.length;
+    setPendingDictionary({ ...pendingDictionary, specials: allSelected ? [] : [...ALL_SPECIALS] });
+  };
+
+  const toggleAllPacks = () => {
+    const allSelected = pendingDictionary.packs.length === ALL_PACKS.length;
+    setPendingDictionary({ ...pendingDictionary, packs: allSelected ? [] : [...ALL_PACKS] });
+  };
+
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: theme.surface }]}>
       <View style={[styles.header, { borderBottomColor: theme.border }]}>
@@ -82,7 +92,16 @@ export default function ConfigDictionary() {
 
         {/* Suoni speciali */}
         <View style={[styles.section, { backgroundColor: theme.surface2 }]}>
-          <Text style={[styles.sectionTitle, { color: theme.text }]}>Suoni speciali</Text>
+          <View style={styles.sectionHeader}>
+            <Text style={[styles.sectionTitle, { color: theme.text }]}>Suoni speciali</Text>
+            <Switch
+              value={pendingDictionary.specials.length === ALL_SPECIALS.length}
+              onValueChange={toggleAllSpecials}
+              trackColor={{ true: COLORS.secondary, false: theme.border }}
+              thumbColor={COLORS.white}
+            />
+          </View>
+          <View style={[styles.divider, { backgroundColor: theme.border }]} />
           {ALL_SPECIALS.map((group) => (
             <View key={group} style={styles.row}>
               <Text style={[styles.rowLabel, { color: theme.text }]}>{SPECIAL_LABELS[group]}</Text>
@@ -98,7 +117,16 @@ export default function ConfigDictionary() {
 
         {/* Parole */}
         <View style={[styles.section, { backgroundColor: theme.surface2 }]}>
-          <Text style={[styles.sectionTitle, { color: theme.text }]}>Parole</Text>
+          <View style={styles.sectionHeader}>
+            <Text style={[styles.sectionTitle, { color: theme.text }]}>Parole</Text>
+            <Switch
+              value={pendingDictionary.packs.length === ALL_PACKS.length}
+              onValueChange={toggleAllPacks}
+              trackColor={{ true: COLORS.bg4, false: theme.border }}
+              thumbColor={COLORS.white}
+            />
+          </View>
+          <View style={[styles.divider, { backgroundColor: theme.border }]} />
           {ALL_PACKS.map((pack) => (
             <View key={pack} style={styles.row}>
               <Text style={[styles.rowLabel, { color: theme.text }]}>{WORD_PACK_LABELS[pack]}</Text>
@@ -144,6 +172,14 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 16,
     fontWeight: "800",
+  },
+  sectionHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  divider: {
+    height: 1,
   },
   sectionSub: {
     fontSize: 13,

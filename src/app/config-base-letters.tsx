@@ -26,6 +26,16 @@ export default function ConfigBaseLetters() {
     setPendingDictionary({ ...pendingDictionary, consonants });
   };
 
+  const toggleAllVowels = () => {
+    const allSelected = pendingDictionary.vowels.length === ALL_VOWELS.length;
+    setPendingDictionary({ ...pendingDictionary, vowels: allSelected ? [] : [...ALL_VOWELS] });
+  };
+
+  const toggleAllConsonants = () => {
+    const allSelected = pendingDictionary.consonants.length === ALL_CONSONANTS.length;
+    setPendingDictionary({ ...pendingDictionary, consonants: allSelected ? [] : [...ALL_CONSONANTS] });
+  };
+
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: theme.surface }]}>
       <View style={[styles.header, { borderBottomColor: theme.border }]}>
@@ -39,7 +49,16 @@ export default function ConfigBaseLetters() {
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
         {/* Vocali */}
         <View style={[styles.section, { backgroundColor: theme.surface2 }]}>
-          <Text style={[styles.sectionTitle, { color: theme.text }]}>Vocali</Text>
+          <View style={styles.sectionHeader}>
+            <Text style={[styles.sectionTitle, { color: theme.text }]}>Vocali</Text>
+            <Switch
+              value={pendingDictionary.vowels.length === ALL_VOWELS.length}
+              onValueChange={toggleAllVowels}
+              trackColor={{ true: COLORS.primary, false: theme.border }}
+              thumbColor={COLORS.white}
+            />
+          </View>
+          <View style={[styles.divider, { backgroundColor: theme.border }]} />
           {ALL_VOWELS.map((vowel) => (
             <View key={vowel} style={styles.row}>
               <Text style={[styles.rowLabel, { color: theme.text }]}>{vowel.toUpperCase()}</Text>
@@ -55,7 +74,16 @@ export default function ConfigBaseLetters() {
 
         {/* Consonanti */}
         <View style={[styles.section, { backgroundColor: theme.surface2 }]}>
-          <Text style={[styles.sectionTitle, { color: theme.text }]}>Consonanti</Text>
+          <View style={styles.sectionHeader}>
+            <Text style={[styles.sectionTitle, { color: theme.text }]}>Consonanti</Text>
+            <Switch
+              value={pendingDictionary.consonants.length === ALL_CONSONANTS.length}
+              onValueChange={toggleAllConsonants}
+              trackColor={{ true: COLORS.primary, false: theme.border }}
+              thumbColor={COLORS.white}
+            />
+          </View>
+          <View style={[styles.divider, { backgroundColor: theme.border }]} />
           {ALL_CONSONANTS.map((consonant) => (
             <View key={consonant} style={styles.row}>
               <Text style={[styles.rowLabel, { color: theme.text }]}>{consonant.toUpperCase()}</Text>
@@ -101,6 +129,14 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 16,
     fontWeight: "800",
+  },
+  sectionHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  divider: {
+    height: 1,
   },
   row: {
     flexDirection: "row",
