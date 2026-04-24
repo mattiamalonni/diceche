@@ -38,7 +38,7 @@ export interface RoundConfig {
 }
 
 export const ALL_VOWELS: string[] = ["a", "e", "i", "o", "u"];
-export const ALL_CONSONANTS: string[] = ["b", "c", "d", "f", "g", "l", "m", "n", "p", "r", "s", "t", "v", "z"];
+export const ALL_CONSONANTS: string[] = ["b", "c", "d", "f", "g", "l", "m", "n", "p", "q", "r", "s", "t", "v", "z"];
 
 export const DEFAULT_CONFIG: RoundConfig = {
   dictionary: {
@@ -138,7 +138,8 @@ export function buildPool(config: RoundConfig): string[] {
   const { combinations, singleLetters, vowels, consonants } = config.dictionary;
 
   if (combinations) {
-    items.push(...generateBase(vowels, consonants));
+    const baseConsonants = consonants.filter((c) => c !== "q");
+    items.push(...generateBase(vowels, baseConsonants));
   }
 
   if (singleLetters) {

@@ -4,6 +4,7 @@ import { useTheme } from "@/contexts/ThemeContext";
 import { ALL_PACKS, ALL_SPECIALS, SPECIAL_LABELS, SpecialGroup, WORD_PACK_LABELS, WordPack } from "@/utils/syllables";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
+import { useEffect } from "react";
 import { Pressable, ScrollView, StyleSheet, Switch, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -13,8 +14,15 @@ export default function ConfigDictionary() {
   const router = useRouter();
 
   const { vowels, consonants, combinations, singleLetters } = pendingDictionary;
-  const combinationsCount = vowels.length * consonants.length;
+  const combinationsCount = vowels.length * consonants.filter((c) => c !== "q").length;
   const singleLettersCount = vowels.length + consonants.length;
+  const canEnableCombinations = vowels.length > 0 && combinationsCount > 0;
+
+  useEffect(() => {
+    if (!canEnableCombinations && pendingDictionary.combinations) {
+      setPendingDictionary({ ...pendingDictionary, combinations: false });
+    }
+  }, [canEnableCombinations, pendingDictionary]);
 
   const toggleCombinations = (val: boolean) => {
     setPendingDictionary({ ...pendingDictionary, combinations: val });
@@ -71,11 +79,12 @@ export default function ConfigDictionary() {
             <Ionicons name="chevron-forward" size={18} color={theme.textMuted} />
           </Pressable>
           <View style={[styles.divider, { backgroundColor: theme.border }]} />
-          <View style={styles.row}>
+          <View style={[styles.row, !canEnableCombinations && { opacity: 0.4 }]}>
             <Text style={[styles.rowLabel, { color: theme.text }]}>Includi sillabe</Text>
             <Switch
-              value={combinations}
+              value={canEnableCombinations ? combinations : false}
               onValueChange={toggleCombinations}
+              disabled={!canEnableCombinations}
               trackColor={{ true: COLORS.primary, false: theme.border }}
               thumbColor={COLORS.white}
             />
