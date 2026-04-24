@@ -12,8 +12,16 @@ export default function ConfigDictionary() {
   const { theme } = useTheme();
   const router = useRouter();
 
-  const toggleBase = (val: boolean) => {
-    setPendingDictionary({ ...pendingDictionary, base: val });
+  const { vowels, consonants, combinations, singleLetters } = pendingDictionary;
+  const combinationsCount = vowels.length * consonants.length;
+  const singleLettersCount = vowels.length + consonants.length;
+
+  const toggleCombinations = (val: boolean) => {
+    setPendingDictionary({ ...pendingDictionary, combinations: val });
+  };
+
+  const toggleSingleLetters = (val: boolean) => {
+    setPendingDictionary({ ...pendingDictionary, singleLetters: val });
   };
 
   const toggleSpecial = (group: SpecialGroup) => {
@@ -41,15 +49,31 @@ export default function ConfigDictionary() {
       </View>
 
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
-        {/* Sillabe base */}
+        {/* Lettere e sillabe */}
         <View style={[styles.section, { backgroundColor: theme.surface2 }]}>
-          <Text style={[styles.sectionTitle, { color: theme.text }]}>Sillabe base</Text>
-          <Text style={[styles.sectionSub, { color: theme.textMuted }]}>≈70 sillabe (ba, be, ce, ci…)</Text>
+          <Text style={[styles.sectionTitle, { color: theme.text }]}>Lettere e sillabe</Text>
+          <Text style={[styles.sectionSub, { color: theme.textMuted }]}>
+            {vowels.length} vocali, {consonants.length} consonanti → {combinationsCount} sillabe + {singleLettersCount} lettere
+            singole
+          </Text>
+          <Pressable style={styles.row} onPress={() => router.push("/config-base-letters")}>
+            <Text style={[styles.rowLabel, { color: theme.text }]}>Vocali e consonanti</Text>
+            <Ionicons name="chevron-forward" size={18} color={theme.textMuted} />
+          </Pressable>
           <View style={styles.row}>
-            <Text style={[styles.rowLabel, { color: theme.text }]}>Attiva</Text>
+            <Text style={[styles.rowLabel, { color: theme.text }]}>Includi sillabe</Text>
             <Switch
-              value={pendingDictionary.base}
-              onValueChange={toggleBase}
+              value={combinations}
+              onValueChange={toggleCombinations}
+              trackColor={{ true: COLORS.primary, false: theme.border }}
+              thumbColor={COLORS.white}
+            />
+          </View>
+          <View style={styles.row}>
+            <Text style={[styles.rowLabel, { color: theme.text }]}>Includi lettere singole</Text>
+            <Switch
+              value={singleLetters}
+              onValueChange={toggleSingleLetters}
               trackColor={{ true: COLORS.primary, false: theme.border }}
               thumbColor={COLORS.white}
             />

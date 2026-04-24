@@ -19,7 +19,10 @@ export type SpecialGroup =
 export type WordPack = "articoli_det" | "articoli_indet" | "prep_semplici" | "prep_articolate";
 
 export interface DictionaryConfig {
-  base: boolean;
+  combinations: boolean;
+  singleLetters: boolean;
+  vowels: string[];
+  consonants: string[];
   specials: SpecialGroup[];
   packs: WordPack[];
 }
@@ -34,9 +37,15 @@ export interface RoundConfig {
   uppercase: boolean; // display syllables in uppercase
 }
 
+export const ALL_VOWELS: string[] = ["a", "e", "i", "o", "u"];
+export const ALL_CONSONANTS: string[] = ["b", "c", "d", "f", "g", "l", "m", "n", "p", "r", "s", "t", "v", "z"];
+
 export const DEFAULT_CONFIG: RoundConfig = {
   dictionary: {
-    base: true,
+    combinations: true,
+    singleLetters: false,
+    vowels: [...ALL_VOWELS],
+    consonants: [...ALL_CONSONANTS],
     specials: ["CH", "GH", "GL", "GN", "SC", "QU", "BR", "CR", "DR", "FR", "GR", "PR", "TR", "BL", "CL", "FL", "PL"],
     packs: ["articoli_det", "articoli_indet", "prep_semplici", "prep_articolate"],
   },
@@ -48,20 +57,18 @@ export const DEFAULT_CONFIG: RoundConfig = {
   uppercase: true,
 };
 
-const VOWELS = ["a", "e", "i", "o", "u"] as const;
-
-const BASE_CONSONANTS = ["b", "c", "d", "f", "g", "l", "m", "n", "p", "r", "s", "t", "v", "z"] as const;
-
-export function generateBase(): string[] {
+export function generateBase(vowels: string[], consonants: string[]): string[] {
   const result: string[] = [];
-
-  for (const consonant of BASE_CONSONANTS) {
-    for (const vowel of VOWELS) {
+  for (const consonant of consonants) {
+    for (const vowel of vowels) {
       result.push(`${consonant}${vowel}`);
     }
   }
-
   return result;
+}
+
+export function generateSingleLetters(vowels: string[], consonants: string[]): string[] {
+  return [...vowels, ...consonants];
 }
 
 const SPECIALS: Record<SpecialGroup, string[]> = {
@@ -128,9 +135,14 @@ export const WORD_PACKS: Record<WordPack, string[]> = {
 
 export function buildPool(config: RoundConfig): string[] {
   const items: string[] = [];
+  const { combinations, singleLetters, vowels, consonants } = config.dictionary;
 
-  if (config.dictionary.base) {
-    items.push(...generateBase());
+  if (combinations) {
+    items.push(...generateBase(vowels, consonants));
+  }
+
+  if (singleLetters) {
+    items.push(...generateSingleLetters(vowels, consonants));
   }
 
   items.push(...generateSpecials(config.dictionary.specials));
@@ -153,7 +165,9 @@ export function shuffle<T>(arr: T[]): T[] {
 
 export function getPoolSize(config: RoundConfig): number {
   const items: string[] = [];
-  if (config.dictionary.base) items.push(...generateBase());
+  const { combinations, singleLetters, vowels, consonants } = config.dictionary;
+  if (combinations) items.push(...generateBase(vowels, consonants));
+  if (singleLetters) items.push(...generateSingleLetters(vowels, consonants));
   items.push(...generateSpecials(config.dictionary.specials));
   for (const pack of config.dictionary.packs) {
     items.push(...WORD_PACKS[pack]);

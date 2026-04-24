@@ -2,7 +2,15 @@ import { COLORS } from "@/constants/colors";
 import { useGame } from "@/contexts/GameContext";
 import { useProfiles } from "@/contexts/ProfileContext";
 import { useTheme } from "@/contexts/ThemeContext";
-import { ALL_PACKS, ALL_SPECIALS, DictionaryConfig, getPoolSize, RoundConfig } from "@/utils/syllables";
+import {
+  ALL_CONSONANTS,
+  ALL_PACKS,
+  ALL_SPECIALS,
+  ALL_VOWELS,
+  DictionaryConfig,
+  getPoolSize,
+  RoundConfig,
+} from "@/utils/syllables";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
@@ -21,7 +29,8 @@ function buildDictionarySummary(d: DictionaryConfig): string {
     prep_articolate: "Prep. artic.",
   };
   const parts: string[] = [];
-  if (d.base) parts.push("Base");
+  if (d.combinations) parts.push("Sillabe");
+  if (d.singleLetters) parts.push("Lettere singole");
   parts.push(...d.specials);
   parts.push(...d.packs.map((p) => SHORT_PACK_LABELS[p] ?? p));
   return parts.length > 0 ? parts.join(", ") : "Nessun contenuto";
@@ -36,7 +45,10 @@ export default function Config() {
   const [config, setConfig] = useState<RoundConfig>({
     ...{
       dictionary: {
-        base: true,
+        combinations: true,
+        singleLetters: false,
+        vowels: [...ALL_VOWELS],
+        consonants: [...ALL_CONSONANTS],
         specials: [...ALL_SPECIALS],
         packs: [...ALL_PACKS],
       },
